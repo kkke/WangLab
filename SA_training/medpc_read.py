@@ -79,11 +79,14 @@ sumdata['subject'] = subject
 sumdata['training'] = programname
 sumdata['date'] = thisDate
 sumdata['FR'] = data_dict['A'][2]
-sumdata['Resp-B'] = data_dic['B'][1]
-sumdata['Resp-F'] = data_dic['B'][2]
+sumdata['Resp-B'] = data_dict['B'][1]
+sumdata['Resp-F'] = data_dict['B'][2]
 sumdata['Resp-Cue-B'] = data_dict['B'][6]
 sumdata['Resp-Cue-F'] = data_dict['B'][7]
 sumdata['Resp-Total'] = data_dict['B'][0]
 sumdata['Reward'] = data_dict['B'][3]
 
+summarydata = pd.DataFrame(sumdata.items()).transpose()
+summarydata.columns = summarydata.iloc[0,:]
+summarydata = summarydata.drop(summarydata.index[0])
 
