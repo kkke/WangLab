@@ -7,10 +7,10 @@ Created on Wed Aug 31 17:12:03 2022
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
+from medpc_read import medpc_readdata
+
 wkdirectory = 'D:\Matlab_scripts\WangLab\SA_training'
 os.chdir(wkdirectory)
-
-%run medpc_read.py
 
 
 datadirectory = 'H:\Data\SA_training\SA_25'
@@ -28,4 +28,5 @@ for filenames in os.listdir(datadirectory):
     else:
         data = pd.concat([data,  temp], ignore_index=True)
     i = i+1
-
+#%%
+data.plot( y = 'Reward')
