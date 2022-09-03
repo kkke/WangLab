@@ -56,7 +56,9 @@ def medpc_readdata(file):
         #then skip all the extraction process below
         #only extract data that we need    
         #recognize all defined variable name in MSN protocol    
-    
+        if programname == 'Extinction_LMS':
+            print('Start loading extinction session')
+            working_var_label.pop()
         
         for idx, var in enumerate(working_var_label, 1):
             if idx < len(working_var_label):
