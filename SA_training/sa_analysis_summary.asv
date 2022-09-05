@@ -1,0 +1,142 @@
+% load data
+clear; close all; clc
+datafolder = 'D:\Project_Master_Folder\Self-Administration\data'
+files = dir([datafolder, '\*.csv'])
+cd(datafolder)
+for i = 1:length(files)
+    data_sum{i} = readtable(files(i).name);
+end
+
+%% reorganize data for plotting; 3 weeks training
+subdata{1}= data_sum{1}(6:17, :);
+subdata{2} = data_sum{2}(5:16, :);
+subdata{3} = data_sum{3}(6:17,:);
+subdata{4} = data_sum{4}(4:15,:);
+subdata{5} = data_sum{5}(4:15,:);
+subdata{6} = data_sum{6}(4:15,:);
+control{1} = data_sum{7}(4:15,:);
+
+activeLever = [];
+inactiveLever = [];
+reward = [];
+for i = 1:length(subdata)
+    activeLever = [activeLever, subdata{i}.activeLeverPress];
+    inactiveLever = [inactiveLever, subdata{i}.inactiveLeverPress];
+    reward = [reward, subdata{i}.Reward];
+end
+figure
+line_errorbar_drc(activeLever', inactiveLever')
+ylim([0,300])
+figure
+line_errorbar_drc(control{1}.activeLeverPress', control{1}.inactiveLeverPress')
+ylim([0,300])
+%% plo the Infusion count
+figure;
+line_errorbar_drc(reward', control{1}.Reward', 'Cocaine', 'Saline')
+ylabel('Infusion #')
+ylim([0,80])
+
+%% reorganize data for plotting; 6 weeks training
+clear subdata
+subdata{1} = data_sum{8}(4:end, :);
+subdata{2} = data_sum{9}(4:end, :);
+subdata{3} = data_sum{10}(4:end, :);
+activeLever = [];
+inactiveLever = [];
+reward = [];
+for i = 1:length(subdata)
+    activeLever = [activeLever, subdata{i}.activeLeverPress];
+    inactiveLever = [inactiveLever, subdata{i}.inactiveLeverPress];
+    reward = [reward, subdata{i}.Reward];
+end
+
+colors = cbrewer('div', 'RdYlBu', 6);
+figure
+h1 = plot(activeLever(:,1), '-o', color = colors(1,:));
+hold on
+h2 = plot(activeLever(:,2), '-o', color = colors(2,:));
+
+h3 = plot(inactiveLever(:, 1), '-o', color = colors(6,:));
+h4 = plot(inactiveLever(:, 2), '-o', color = colors(5,:));
+
+set(h1, 'LineWidth', 1)
+set(h1, 'MarkerFaceColor', 'w')
+set(h2, 'LineWidth', 1)
+set(h2, 'MarkerFaceColor', 'w')
+set(h3, 'LineWidth', 1)
+set(h3, 'MarkerFaceColor', 'w')
+set(h4, 'LineWidth', 1)
+set(h4, 'MarkerFaceColor', 'w')
+% legend([h1, h2], {'Active Lever', 'Inactive Lever'})
+ylabel('Lever Press #')
+set(gca,'XTick',0:5:30)
+xlim([0,30])
+box off
+set(gca,'TickDir','out')
+set(gca,'fontsize',12)
+set(gca,'TickLengt', [0.015 0.015]);
+set(gca, 'LineWidth',1)
+set(gcf,'position',[100,100,600,400])
+legend([h1, h2, h3, h4], {'Active Lever Mouse#1', 'Active Lever Mouse#1', ...
+    'Inactive Lever Mouse#1', 'Inactive Lever Mouse#1',})
+xlabel('Session #')
+
+xlim([0, 12])
+ylim([0, 300])
+set(gcf,'position',[100,100,400,400])
+%% plot infusion count
+figure
+h1 = plot(reward(:,1), '-o', color = colors(1,:));
+hold on
+h2 = plot(reward(:,2), '-o', color = colors(2,:));
+
+
+set(h1, 'LineWidth', 1)
+set(h1, 'MarkerFaceColor', 'w')
+set(h2, 'LineWidth', 1)
+set(h2, 'MarkerFaceColor', 'w')
+
+% legend([h1, h2], {'Active Lever', 'Inactive Lever'})
+ylabel('Infusion #')
+set(gca,'XTick',0:5:30)
+xlim([0,30])
+box off
+set(gca,'TickDir','out')
+set(gca,'fontsize',12)
+set(gca,'TickLengt', [0.015 0.015]);
+set(gca, 'LineWidth',1)
+set(gcf,'position',[100,100,400,400])
+legend([h1, h2], {'Mouse#1', 'Mouse#2'})
+xlabel('Session #')
+
+%% plot Active lever press during time out
+activeLever = [];
+inactiveLever = [];
+reward = [];
+for i = 1:length(subdata)
+    activeLever_Cue = [activeLever, subdata{i}.activeLeverPress_Cue];
+end
+
+figure
+h1 = plot(reward(:,1), '-o', color = colors(1,:));
+hold on
+h2 = plot(reward(:,2), '-o', color = colors(2,:));
+
+
+set(h1, 'LineWidth', 1)
+set(h1, 'MarkerFaceColor', 'w')
+set(h2, 'LineWidth', 1)
+set(h2, 'MarkerFaceColor', 'w')
+
+% legend([h1, h2], {'Active Lever', 'Inactive Lever'})
+ylabel('Infusion #')
+set(gca,'XTick',0:5:30)
+xlim([0,30])
+box off
+set(gca,'TickDir','out')
+set(gca,'fontsize',12)
+set(gca,'TickLengt', [0.015 0.015]);
+set(gca, 'LineWidth',1)
+set(gcf,'position',[100,100,400,400])
+legend([h1, h2], {'Mouse#1', 'Mouse#2'})
+xlabel('Session #')
