@@ -39,6 +39,6 @@ Event.camera_on    = event_camera_on;
 if nargin < 2
     outputpath = uigetdir(analdir, 'Select the folder to save the event data')
 end
-cd(outputpath)
+cd([outputpath, '/SpikeData/'])
 fprintf('Savine the event data\n');    
 save('Events.mat', 'Event')
