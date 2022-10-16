@@ -14,8 +14,11 @@ import matplotlib.pyplot as plt
 # 
 # =============================================================================
 
-directory = 'I:\LifeCanvas CRO datasets\March 2022 datasets\MIT_Wang_12142021_analysis'
-filename = 'combined_density_MIT_Wang_12142021_6.csv'
+# directory = 'I:\LifeCanvas CRO datasets\March 2022 datasets\MIT_Wang_12142021_analysis'
+# filename = 'combined_density_MIT_Wang_12142021_6.csv'
+
+directory = 'D:/Project_Master_Folder/Withdrawal-Pain-Anxiety/Data_Analysis_WholeBrain_cFos/rawData/'
+filename = 'kcmp28-30Raw.csv'
 os.chdir(directory)
 
 #%% extract useful information
