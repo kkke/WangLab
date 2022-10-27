@@ -15,6 +15,7 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import numpy as np
 # =============================================================================
 # directory = 'I:\LifeCanvas CRO datasets\May 2022 datasets\FanWang_03292022_MIT_analysis'
 # filename = 'combined_density_FanWang_03292022_MIT_6.csv'
@@ -87,18 +88,51 @@ os.makedirs('./summary', exist_ok=True)
 sub_data_new.to_csv('./summary/summary_' + files + '.csv')
 
 #%% summarize all data together
-directory = 'D:/WangLab_data/Data_Analysis_WholeBrain_cFos/summary'
-os.chdir(directory)
+directory = 'D:/Dropbox/Wang Lab/DataTransfer/Whole_Brain_cFos/summary'
 i = 0
-for f in os.listdir(directory):
-    temp = pd.read_csv(os.path.join(directory, f))
-    i +=1
-    if i ==1:
+for file in os.listdir(directory):
+    if file.endswith('.csv'):
+        temp = pd.read_csv(os.path.join(directory, file))
+    else:
+        continue
+    if i == 0:
         data = temp
     else:
-        data = pd.concat([data,temp])
-        
-        
+        data = pd.concat([data, temp], ignore_index= True)
+    i = i +1
+data = data.rename(columns= {'Unnamed: 0' : 'animalID'})
+
+region_index = pd.read_csv('D:/Dropbox/Wang Lab/DataTransfer/Whole_Brain_cFos/brain_index_info.csv')
+region_index = region_index.rename({'Unnamed: 0' : 'Regions', '0' : 'Counts'}, axis = 1)
+region_index_array = np.cumsum(region_index.iloc[:,1].array)
+data_m = data.loc[(data['gender'] == 'm')]
+column_name = data_m.columns
+i = 0
+ratio = (3 * region_index.iloc[:,1] /region_index.iloc[0,1]).tolist()
+for index in region_index_array:
+    if i == 0:
+        long_data_m = data_m.melt(id_vars = ['animalID', 'treatment'], value_vars= column_name[2 : index+3], 
+                              var_name= 'regions', value_name = 'cFos Density')
+    else:
+        long_data_m = data_m.melt(id_vars = ['animalID', 'treatment'], value_vars= column_name[region_index_array[i-1]+3: index+3], 
+                              var_name= 'regions', value_name = 'cFos Density')
+    g = sns.catplot(
+        data=long_data_m, kind="bar",
+        x="regions", y="cFos Density", hue="treatment",
+         palette="Spectral", height=4, aspect=ratio[i]
+    )
+    i +=1
+
+# long_data_m = data_m.melt(id_vars = ['animalID', 'treatment'], value_vars= column_name[2 : region_index.iloc[0, 1]], 
+                      # var_name= 'regions', value_name = 'cFos Density')
+# Draw a nested barplot by species and sex
+#sns.set(font_scale=1.2)
+# g = sns.catplot(
+#     data=long_data_m, kind="bar",
+#     x="regions", y="cFos Density", hue="treatment",
+#      palette="Spectral", height=4, aspect=3
+# )
+# g.set_yticklabels(g.get_yticks(), size = 15)        
 
 
 
