@@ -24,7 +24,7 @@ import seaborn as sns
 # directory = 'I:\LifeCanvas CRO datasets\March 2022 datasets\MIT_Wang_12142021_analysis'
 # filename = 'combined_density_MIT_Wang_12142021_6.csv'
 
-directory = 'D:/WangLab_data/Data_Analysis_WholeBrain_cFos/rawData'
+directory = 'H:/Dropbox/Dropbox/Wang Lab/DataTransfer/Whole_Brain_cFos/rawData'
 filename = 'kcmp40-41-46Raw.csv'
 os.chdir(directory)
 
@@ -48,6 +48,13 @@ frames = [cortical_data, corticalplate_data, striatum_data,
 sub_data = pd.concat(frames)
 
 sub_data.plot.bar(x = 'acronym', y = [6, 7,8], title = 'Left', xlabel = 'Regions', ylabel = 'cFos+ Density (cells/mm^3)')
+index_name = ['cortical_data', 'corticalplate_date', 'striatum_data', 'pallidum_data', 'thalamus_data', 
+              'hypothalamus_data', 'midbrain_data', 'hindbrain_data', 'medulla_data']
+index_data = [cortical_data.shape[0], corticalplate_data.shape[0], striatum_data.shape[0], 
+              pallidum_data.shape[0], thalamus_data.shape[0], hypothalamus_data.shape[0],
+              midbrain_data.shape[0], hindbrain_data.shape[0], medulla_data.shape[0]]
+index_info = pd.DataFrame(index_data, index= index_name)
+index_info.to_csv('brain_index_info.csv')
 #%% data cleanning
 sub_data = sub_data.drop(sub_data.columns[[6,7,8,9,13]], axis = 1)
 
