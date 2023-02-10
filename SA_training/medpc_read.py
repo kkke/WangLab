@@ -95,3 +95,36 @@ def medpc_readdata(file):
     summarydata = summarydata.drop(summarydata.index[0])
     return summarydata
 
+def medpc_preprocess(filedir):
+    i = 0
+    for filenames in os.listdir(filedir):
+        if filenames.endswith('.txt'):
+            # Prepare the Summary DataFrame for Each Session
+            temp= medpc_readdata(os.path.join(filedir, filenames))
+        else:
+            continue
+        if i == 0:
+            data = temp
+        else:
+            data = pd.concat([data,  temp], ignore_index=True)
+        i = i+1
+    subject = data['subject'][0]
+    # save all data in one file
+    #summarydata[subject] = data 
+
+    activeLever = data['training'][2][0]
+    if activeLever == 'F':
+        inactiveLever = 'B'
+    else:
+        inactiveLever = 'F'
+        
+    data['activeLeverPress'] = data['Resp-' + activeLever] + data['Resp-Cue-' + activeLever]
+    data['inactiveLeverPress'] = data['Resp-' + inactiveLever] + data['Resp-Cue-' + inactiveLever]
+    
+    data['activeLeverPress-Cue'] = data['Resp-Cue-' + activeLever]
+    data['inactiveLeverPress-Cue'] = data['Resp-Cue-' + inactiveLever]
+    return data
+    #savedirectory = 'D:\Project_Master_Folder\Self-Administration\data'
+    
+    #data.to_csv(os.path.join(savedirectory, subject + '_Acquisition.csv'))
+    
