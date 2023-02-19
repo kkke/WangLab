@@ -31,10 +31,26 @@ e = std(psth_signal,1, 2)/sqrt(size(psth_signal, 2));
 boundedline(x, y, e, '-k');
 xlabel('Time (s)')
 ylabel('\Delta F/F')
+xlim([min(mean(psth_time, 2)), max(mean(psth_time, 2))])
+ylim([-0.1, 0.1])
+box off
+set(gca,'TickDir','out')
+set(gca,'fontsize',12)
+set(gca,'TickLengt', [0.015 0.015]);
+set(gca, 'LineWidth',1)
+set(gcf,'position',[100,100,300,400])
 subplot(2, 1, 2)
 imagesc(mean(psth_time, 2),[] ,psth_signal')
-colorbar
+% colorbar
 xlabel('Time (s)')
 ylabel('Trials')
+set(gca,'TickDir','out')
+set(gca,'fontsize',12)
+set(gca,'TickLengt', [0.015 0.015]);
+set(gca, 'LineWidth',1)
+set(gcf,'position',[100,100,300,400])
+colormap('jet')
+caxis([-0.1, 0.2])
+box off
 end
 
