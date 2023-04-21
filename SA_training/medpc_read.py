@@ -36,7 +36,7 @@ def medpc_readdata(file):
         datasets = f.read().split('Start Date: ') #Split the data file at Start Dates
         TS_var_name_maps = {}
         arrayA_name_maps = {}
-        working_var_label= ['A', 'B', 'C', 'L', 'M', 'N', 'O', 'W']    
+        working_var_label= ['A', 'B', 'C', 'G','L', 'M', 'N', 'O', 'W']    
         
     theData = datasets[1]
     thisDate = (datetime.strptime(theData[0:8], "%m/%d/%y")).strftime("%Y-%m-%d")
@@ -93,14 +93,14 @@ def medpc_readdata(file):
     summarydata = pd.DataFrame(sumdata.items()).transpose()
     summarydata.columns = summarydata.iloc[0,:]
     summarydata = summarydata.drop(summarydata.index[0])
-    return summarydata
+    return summarydata, data_dict
 
 def medpc_preprocess(filedir):
     i = 0
     for filenames in os.listdir(filedir):
         if filenames.endswith('.txt'):
             # Prepare the Summary DataFrame for Each Session
-            temp= medpc_readdata(os.path.join(filedir, filenames))
+            temp, data_dict = medpc_readdata(os.path.join(filedir, filenames))
         else:
             continue
         if i == 0:
@@ -124,7 +124,14 @@ def medpc_preprocess(filedir):
     data['activeLeverPress-Cue'] = data['Resp-Cue-' + activeLever]
     data['inactiveLeverPress-Cue'] = data['Resp-Cue-' + inactiveLever]
     return data
+
+    
     #savedirectory = 'D:\Project_Master_Folder\Self-Administration\data'
     
     #data.to_csv(os.path.join(savedirectory, subject + '_Acquisition.csv'))
+def medpc_readtimestamps(file):
+
+    temp, data_dict = medpc_readdata(file)
+    return data_dict
     
+ 
