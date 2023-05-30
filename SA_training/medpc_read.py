@@ -12,6 +12,7 @@ import numpy as np   #for calculaiton
 from openpyxl import load_workbook
 from datetime import datetime
 from collections import defaultdict
+import scipy.io
 Tree= lambda: defaultdict(Tree)
 
 # =============================================================================
@@ -34,8 +35,6 @@ def medpc_readdata(file):
     #################################
     with open(file, 'r') as f:
         datasets = f.read().split('Start Date: ') #Split the data file at Start Dates
-        TS_var_name_maps = {}
-        arrayA_name_maps = {}
         working_var_label= ['A', 'B', 'C', 'G','L', 'M', 'N', 'O', 'W']    
         
     theData = datasets[1]
@@ -97,16 +96,19 @@ def medpc_readdata(file):
 
 def medpc_preprocess(filedir):
     i = 0
+    
     for filenames in os.listdir(filedir):
         if filenames.endswith('.txt'):
             # Prepare the Summary DataFrame for Each Session
-            temp, data_dict = medpc_readdata(os.path.join(filedir, filenames))
+            temp, temp_dict= medpc_readdata(os.path.join(filedir, filenames))
         else:
             continue
         if i == 0:
             data = temp
         else:
             data = pd.concat([data,  temp], ignore_index=True)
+        timestamps = medpc_readtimestamps(temp_dict)
+        scipy.io.savemat(filedir + filenames + '_timestamps.mat', timestamps)
         i = i+1
     subject = data['subject'][0]
     # save all data in one file
@@ -123,15 +125,21 @@ def medpc_preprocess(filedir):
     
     data['activeLeverPress-Cue'] = data['Resp-Cue-' + activeLever]
     data['inactiveLeverPress-Cue'] = data['Resp-Cue-' + inactiveLever]
+    data.to_csv(os.path.join(filedir, subject + '_Acquisition.csv'))
+
     return data
 
-    
     #savedirectory = 'D:\Project_Master_Folder\Self-Administration\data'
-    
-    #data.to_csv(os.path.join(savedirectory, subject + '_Acquisition.csv'))
-def medpc_readtimestamps(file):
+def medpc_readtimestamps(data_dict):
+    timestamps = {}
+    timestamps['cue'] = data_dict['G']
+    back_lever  = data_dict['L']
+    front_lever = data_dict['M']
+    timestamps['reward']      = data_dict['W']
+    timestamps['back_lever']  = list(filter(lambda x: x !=0, back_lever))
+    timestamps['front_lever'] = list(filter(lambda x: x != 0,front_lever))
+    return timestamps
 
-    temp, data_dict = medpc_readdata(file)
-    return data_dict
+
     
  
