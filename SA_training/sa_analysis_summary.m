@@ -11,13 +11,13 @@ end
 %% refill some information
 for j = 1:length(data_sum)
     for i = 1: size(data_sum{j},1)
-        data_sum{j}.genotype{i} = 'Hets';
+        data_sum{j}.genotype{i} = 'WT';
     end
 end
 %% save data
 data = data_sum;
-save('LeverPress_summary.mat', 'data')
-%% find the autoshaping session
+% save('LeverPress_summary.mat', 'data')
+%% find the autoshaping, PR, and shock session
 for i = 1:length(data)
     training_protocol = data{i}.training;
     autoshaping_index = find(contains(training_protocol, 'KC_Auto Shaping'));
@@ -25,12 +25,16 @@ for i = 1:length(data)
     PR_session        = find(contains(training_protocol, 'PR_Self-Admin'));
     shock_session     = find(contains(training_protocol, 'shock'));
     summarydata(i).animalID = data{i}.subject{i};
+    summarydata(i).genotype = data{i}.genotype{1};
     summarydata(i).data = data{i};
     summarydata(i).autoshaping_index = autoshaping_index;
     summarydata(i).shaping_6h        = shaping_6h;
     summarydata(i).PR_session        = PR_session;
     summarydata(i).shock_session     = shock_session;
 end
+%% save the summary data
+save('LeverPress_summary.mat', 'data')
+
 %% for sapap3 foot shock plotting
 
 subdata{1} = data_sum{2}(32:end, :);

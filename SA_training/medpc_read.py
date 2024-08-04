@@ -96,7 +96,7 @@ def medpc_readdata(file):
 
 def medpc_preprocess(filedir):
     i = 0
-    
+    timestamps = []
     for filenames in os.listdir(filedir):
         if filenames.endswith('.txt'):
             # Prepare the Summary DataFrame for Each Session
@@ -107,8 +107,8 @@ def medpc_preprocess(filedir):
             data = temp
         else:
             data = pd.concat([data,  temp], ignore_index=True)
-        timestamps = medpc_readtimestamps(temp_dict)
-        scipy.io.savemat(filedir + filenames + '_timestamps.mat', timestamps)
+        timestamps.append(medpc_readtimestamps(temp_dict))
+        # scipy.io.savemat(filedir + filenames + '_timestamps.mat', timestamps)
         i = i+1
     subject = data['subject'][0]
     # save all data in one file
@@ -125,11 +125,13 @@ def medpc_preprocess(filedir):
     
     data['activeLeverPress-Cue'] = data['Resp-Cue-' + activeLever]
     data['inactiveLeverPress-Cue'] = data['Resp-Cue-' + inactiveLever]
-    data.to_csv(os.path.join(filedir, subject + '_Acquisition.csv'))
 
-    return data
+    data.to_csv(os.path.join(filedir, subject + "_" + filedir.strip().split("/")[-1] + '.csv'))
+
+    return data, timestamps
 
     #savedirectory = 'D:\Project_Master_Folder\Self-Administration\data'
+
 def medpc_readtimestamps(data_dict):
     timestamps = {}
     timestamps['cue'] = data_dict['G']
@@ -140,6 +142,80 @@ def medpc_readtimestamps(data_dict):
     timestamps['front_lever'] = list(filter(lambda x: x != 0,front_lever))
     return timestamps
 
+def medpc_readreward(filedir):
+    alldata_tree = Tree()
+    subject_list= []
+    MSN_dict={}
+    nowtime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+    progamnames = []
+    for filenames in os.listdir(filedir): 
+        if filenames.endswith('.txt'):
+            file = os.path.join(filedir, filenames)
+    #################################
+    #load raw file into dict
+    #################################
+    with open(file, 'r') as f:
+        datasets = f.read().split('Start Date: ') #Split the data file at Start Dates
+    working_var_label= ['A', 'B']    
+        
+    theData = datasets[1]
+    thisDate = (datetime.strptime(theData[0:8], "%m/%d/%y")).strftime("%Y-%m-%d")
+    thisDate = thisDate.replace('-','')
+    data_dict = {}
+    if theData.find('\r\n'):
+        theData = theData.replace('\r\n', '\n')
+        splitOffData = theData.split('MSN:')
+        match = re.search('Subject: .*\n', splitOffData[0])
+        subject = match.group(0).split(':')[1].strip()
+        subject_list.append(subject)
+        variables = splitOffData[1].split('\n')
+        match2 = re.search('Box: .*\n', splitOffData[0])
+        box = match2.group(0).split(':')[1].strip()
+        programname = variables.pop(0).strip()
+        #if there is date needed to be remove from a ID's data
+        #then skip all the extraction process below
+        #only extract data that we need    
+        #recognize all defined variable name in MSN protocol    
+        if programname == 'Extinction_LMS':
+            print('Start loading extinction session')
+            working_var_label.pop()
+        
+        for idx, var in enumerate(working_var_label, 1):
+            if idx < len(working_var_label):
+                start = variables.index(working_var_label[idx-1]+":")
+                end = variables.index(working_var_label[idx]+":")
+                data = variables[start+1:end]
+            else:
+                start = variables.index(working_var_label[idx-1]+":")
+                data = variables[start+1:]
+            temp = []
+    
+            for d in data:
+                if d!='':
+                    temp += re.split('\s+',d.split(':')[1])
+                    temp.remove('')
+                #convert str --> numbers
+            data_dict[var.strip(':')] =  pd.to_numeric(pd.Series(temp, name = var.strip(':'),dtype = float))
+        alldata_tree[programname][thisDate][subject] = data_dict
+      
+    sumdata = {}
+    sumdata['subject'] = subject
+    sumdata['training'] = programname
+    sumdata['date'] = thisDate
+    sumdata['FR'] = data_dict['A'][2]
+    sumdata['Resp-B'] = data_dict['B'][1]
+    sumdata['Resp-F'] = data_dict['B'][2]
+    sumdata['Resp-Cue-B'] = data_dict['B'][6]
+    sumdata['Resp-Cue-F'] = data_dict['B'][7]
+    sumdata['Resp-Total'] = data_dict['B'][0]
+    sumdata['Reward'] = data_dict['B'][3]
+    
+    summarydata = pd.DataFrame(sumdata.items()).transpose()
+    summarydata.columns = summarydata.iloc[0,:]
+    summarydata = summarydata.drop(summarydata.index[0])
+    # summarydata.to_csv(os.path.join(filedir, subject + '_' + filedir.strip().split("/")[-1] + '.csv'))
 
+    return summarydata
     
  

@@ -71,26 +71,33 @@ end
 %%
 figure
 for j = 1:length(plot_variable)
-    [B, I] = sort(avg_data{i}.concentration);
-    subplot(1,3,j)
+    [B, I] = sort(avg_data{1}.concentration);
+    group_data =[];
+    P(j) = subplot(1,3,j)
     for i = 1:length(avg_data)
         h(i) = semilogx(B,avg_data{i}.(plot_variable{j})(I) , '-o', color = colors(i,:));
+        group_data = [group_data; avg_data{i}.(plot_variable{j})(I)];
         hold on
         set(h(i), 'LineWidth', 1)
         set(h(i), 'MarkerFaceColor', 'w')
     end
+    semilogx(B, mean(group_data, 1), '-o')
     clear temp_avg
     legend([h(1), h(2), h(3)], {'SSA41', 'SSA44', 'SSA48'})
     ylabel(plot_variable{j})
     set(gca,'XTick',B)
-    xlim([-1,12])
+    xlim([0,12])
     box off
     set(gca,'TickDir','out')
     set(gca,'fontsize',12)
     set(gca,'TickLengt', [0.015 0.015]);
     set(gca, 'LineWidth',1)
     xlabel('Fentanyl (ug/kg/infusion)')
+    title(plot_variable{j})
 end
-set(gcf,'position',[100,100,1200,400]) 
+set(P(1),'Ylim', [0, 60])
+set(P(2),'Ylim', [0, 500])
+set(P(3), 'Ylim', [0, 150])
+set(gcf,'position',[100,100,1200,300]) 
 
 save('data_for_concentration.mat', 'subdata', 'data_sum', 'avg_data', 'colors', 'concentration')

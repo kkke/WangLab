@@ -1,0 +1,75 @@
+spike15a = summarydata(1).spiketimes;
+spike22 = summarydata(2).spiketimes;
+spike28 = summarydata(3).spiketimes;
+spike1a = summarydata(4).spiketimes;
+spike1b = summarydata(5).spiketimes;
+spike9 = summarydata(6).spiketimes;
+spike13 = summarydata(7).spiketimes;
+spike15b = summarydata(8).spiketimes;
+spike18 = summarydata(9).spiketimes;
+spike19 = summarydata(10).spiketimes;
+spike20 = summarydata(11).spiketimes;
+spike28 = summarydata(12).spiketimes;
+spike1c = summarydata(13).spiketimes;
+Lever_out = summarydata(1).event.process.Lever_on; 
+Pump = summarydata(1).event.process.pump_on;
+activeLever = summarydata(1).event.process.([summarydata(1).event.activeLever, '_lever']);
+inactiveLever = summarydata(1).event.process.([summarydata(1).event.inactiveLever, '_lever']);
+%%
+spike1 = summarydata(1).spiketimes;
+spike7 = summarydata(2).spiketimes;
+spike11 = summarydata(3).spiketimes;
+spike13 = summarydata(4).spiketimes;
+spike15 = summarydata(5).spiketimes;
+spike22 = summarydata(6).spiketimes;
+spike28 = summarydata(7).spiketimes;
+spike29 = summarydata(8).spiketimes;
+Lever_out = summarydata(1).event.process.Lever_on; 
+Pump = summarydata(1).event.process.pump_on;
+activeLever = summarydata(1).event.process.([summarydata(1).event.activeLever, '_lever']);
+inactiveLever = summarydata(1).event.process.([summarydata(1).event.inactiveLever, '_lever']);
+%%
+spike9 = summarydata(1).spiketimes;
+spike11a = summarydata(2).spiketimes;
+spike11b = summarydata(3).spiketimes;
+spike25a = summarydata(4).spiketimes;
+spike4 = summarydata(5).spiketimes;
+spike3 = summarydata(6).spiketimes;
+spike6= summarydata(7).spiketimes;
+spike14 = summarydata(8).spiketimes;
+spike15 = summarydata(9).spiketimes;
+spike25b = summarydata(10).spiketimes;
+spike29 = summarydata(11).spiketimes;
+Lever_out = summarydata(1).event.process.Lever_on; 
+Pump = summarydata(1).event.process.pump_on;
+activeLever = summarydata(1).event.process.([summarydata(1).event.activeLever, '_lever']);
+inactiveLever = summarydata(1).event.process.([summarydata(1).event.inactiveLever, '_lever']);
+%% SA59-2022-12-14_12-23-06.mat
+spike14a = summarydata(1).spiketimes;
+spike18 = summarydata(2).spiketimes;
+spike1 = summarydata(3).spiketimes;
+spike3 = summarydata(4).spiketimes;
+spike7 = summarydata(5).spiketimes;
+spike11a = summarydata(6).spiketimes;
+spike11b= summarydata(7).spiketimes;
+spike14b = summarydata(8).spiketimes;
+spike31 = summarydata(9).spiketimes;
+
+Lever_out = summarydata(1).event.process.Lever_on; 
+Pump = summarydata(1).event.process.pump_on;
+activeLever = summarydata(1).event.process.([summarydata(1).event.activeLever, '_lever']);
+inactiveLever = summarydata(1).event.process.([summarydata(1).event.inactiveLever, '_lever']);
+%%
+spike7 = summarydata(1).spiketimes;
+spike11 = summarydata(2).spiketimes;
+spike10 = summarydata(3).spiketimes;
+spike1 = summarydata(4).spiketimes;
+spike13 = summarydata(5).spiketimes;
+spike31 = summarydata(6).spiketimes;
+spike20= summarydata(7).spiketimes;
+spike19 = summarydata(8).spiketimes;
+
+Lever_out = summarydata(1).event.process.Lever_on; 
+Pump = summarydata(1).event.process.pump_on;
+activeLever = summarydata(1).event.process.([summarydata(1).event.activeLever, '_lever']);
+inactiveLever = summarydata(1).event.process.([summarydata(1).event.inactiveLever, '_lever']);

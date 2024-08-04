@@ -1,11 +1,16 @@
-function ProcessedData = fb_extract_gr(filename)
+function ProcessedData = fb_extract_gr(filename, type)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 % extract signal in green channel and control signal in red channel
 rawdata_tree = '/DataAcquisition/FPConsole/Signals/';
 setting_tree = '/Configurations/FPConsole/AIN02/Settings/';
 % processed_data_tree = '/DataProcessed/FPConsole/DFFSignals/';
-Seriers = {'Series0001', 'Series0002', 'Series0003'};
+switch type
+    case 'Seriers'
+    Seriers = {'Series0001', 'Series0002', 'Series0003'};
+    case 'none'
+    Seriers = {'Series0001'};
+end
 
 for i = 1:length(Seriers)
     ProcessedData(i).Seriers = Seriers{i};
