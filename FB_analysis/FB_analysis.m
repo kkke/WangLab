@@ -471,7 +471,7 @@ figure;
 cluster_id = baf.hierarchical_cluster([resistence, reinstatment]);
 % figure;
 % cluster_id = baf.hierarchical_cluster(reward_summary);
-colors = cbrewer('div', 'RdYlBu', 4);
+colors = cbrewer2('div', 'RdYlBu', 4);
 
 figure;
 scatter(resistence(cluster_id==1), reinstatment(cluster_id ==1), 'MarkerFaceColor',colors(1, :), 'MarkerEdgeColor','w')
