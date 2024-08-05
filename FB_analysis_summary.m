@@ -14,4 +14,4 @@ for i = 1:length(groupdata)
     groupdata(i).psth_infusion_avg = mean(groupdata(i).psth_infusion, 2, 'omitmissing');
     groupdata(i).psth_infusion_time = mean(psth_time, 2, 'omitmissing');
 end
-%%
+%% classify animal behaivors

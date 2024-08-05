@@ -216,7 +216,6 @@ classdef behavior_analysis_func
             hold on
             for i = 1 : length(summarydata)
                 
-            
                 include_index = sort([summarydata(i).recording_index; summarydata(i).shock_session]);
                 subdata_training = summarydata(i).data(include_index,:);
                 shock_index = min(find(contains(subdata_training.training, 'shock')));
@@ -227,11 +226,11 @@ classdef behavior_analysis_func
                 hold on
                 set(h(i), 'LineWidth', 1)
                 set(h(i), 'MarkerFaceColor', 'w')
-                legend_handles = [legend_handles, h(i)];
-                legend_labels  = {legend_labels{:}, subdata_training.subject{1}};
+                % legend_handles = [legend_handles, h(i)];
+                % legend_labels  = {legend_labels{:}, subdata_training.subject{1}};
                 subdata{i} = subdata_training;
             end
-            legend(legend_handles, legend_labels)
+            % legend(legend_handles, legend_labels)
             hold on
             ylabel(event)
             xlabel('Session #')
