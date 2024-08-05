@@ -1,5 +1,5 @@
 %% try to cluster behaviors
-function groupdata = behavior_analysis_cluster(groupdata)
+function [groupdata, cluster_id] = behavior_analysis_cluster(groupdata)
 baf = behavior_analysis_func;
 figure
 reward_summary = [];

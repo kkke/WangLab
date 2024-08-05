@@ -695,6 +695,10 @@ function groupplot_psth_avg(obj, time_avg, psth_avg)
     set(gca,'TickLengt', [0.015 0.015]);
     set(gca, 'LineWidth',1)
     set(gcf,'position',[100,100,300,400])
+
+    psth_avg(:, any(isnan(psth_avg), 1)) = [];
+    time_avg(:, any(isnan(time_avg), 1)) = [];
+
     subplot(2, 1, 2)
     imagesc(mean(time_avg, 2), [], psth_avg')
     % colorbar
