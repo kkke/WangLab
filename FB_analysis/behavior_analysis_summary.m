@@ -82,6 +82,9 @@ ylim([0, 1500])
 xlim([0, 4])
 hold on
 plot(activeLever_sub, 'k')
+xticks(0:4)
+xticklabels({'', 'Taking', 'Punishment', 'Reinstatement', ''})
+
 
 % infusion counts
 figure
@@ -91,6 +94,9 @@ hold on
 xlim([0, 4])
 hold on
 plot(reward_sub, 'color',[0.1, 0.1, 0.1])
+xticks(0:4)
+xticklabels({'', 'Taking', 'Punishment', 'Reinstatement', ''})
+
 
 % average infusion
 reward_taking = mean(Reward(1:3, :), 1);
@@ -101,6 +107,9 @@ baf.line_plot_errorbar([reward_taking;reward_punish;reward_reinstatement]', 'k',
 hold on
 xlim([0, 4])
 plot([reward_taking;reward_punish;reward_reinstatement], 'color',[0.1, 0.1, 0.1])
+xticks(0:4)
+xticklabels({'', 'Taking', 'Punishment', 'Reinstatement', ''})
+
 
 % average active Lever
 activeLever_taking = mean(activeLever(1:3, :), 1);
@@ -110,5 +119,7 @@ figure
 baf.line_plot_errorbar([activeLever_taking;activeLever_punish;activeLever_reinstatement]', [215,25,28]/255, 'Average Lever Press #')
 hold on
 xlim([0, 4])
+xticks(0:4)
+xticklabels({'', 'Taking', 'Punishment', 'Reinstatement', ''})
 plot([activeLever_taking;activeLever_punish;activeLever_reinstatement], 'color',[0.1, 0.1, 0.1])
 ylim([0, 1000])

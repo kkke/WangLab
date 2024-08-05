@@ -15,3 +15,6 @@ for i = 1:length(groupdata)
     groupdata(i).psth_infusion_time = mean(psth_time, 2, 'omitmissing');
 end
 %% classify animal behaivors
+groupdata = behavior_analysis_summary(groupdata);
+groupdata = behavior_analysis_cluster(groupdata);
+%%
