@@ -376,7 +376,7 @@ classdef fb_extract_doric
                     plot([0, 0], [-1, 1], 'r--')
                     plot([19.50, 19.50], [-1, 1], '--')
                     plot([40.00, 40.00], [-1, 1], '--')
-                    title(fig_title)
+                    % title(fig_title)
 
                     box off
                     set(gca,'TickDir','out')

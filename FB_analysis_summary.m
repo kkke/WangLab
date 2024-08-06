@@ -52,6 +52,9 @@ for i = 1:length(groupdata)
     resp2(i) = mean(psth_avg(resp2_index, i)- baseline(i));
 end
 
+[B, I]  = sort(reward_reinstatement, 'descend');
+fb.groupplot_psth_avg(time_avg(:, I), psth_avg(:, I) -baseline(I))
+set(gcf,'position',[100,100,600,600])
 %% assemble the summary data
 data.seeking.psth_avg = psth_avg -baseline;
 data.seeking.resp = resp;
@@ -123,4 +126,41 @@ ylim([0, 0.8])
 xlim([-1, 3])
 ylabel('Reinstatement Score')
 
+%% based on cluster
+psth_summary_time = mean(time_avg, 2, 'omitmissing');
+cluster_id = [];
+for i = 1:length(groupdata)
+    cluster_id(i) = groupdata(i).cluster.cluster;
+end
+psth_cluster_01 = data.seeking.psth_avg(:, cluster == 1);
+psth_cluster_02 = data.seeking.psth_avg(:, cluster_id == 2);
+psth_cluster_03 = data.seeking.psth_avg(:, cluster_id == 3);
+psth_cluster_04 = data.seeking.psth_avg(:, cluster_id == 4);
+figure;
+imagesc(psth_summary_time, [], [psth_cluster_01';psth_cluster_02';psth_cluster_03';psth_cluster_04'])
+box off
+xlabel('Time (s)')
+set(gca,'YTick',[1, 2, 3, 4, 8, 12, 13, 16, 19])
+box off
+set(gca,'TickDir','out')
+set(gca,'fontsize',12)
+set(gca,'TickLengt', [0.015 0.015]);
+set(gca, 'LineWidth',1)
+set(gca, 'YTickLabel', {'1','# 1', '3', '4', '# 2', '12', '13', '# 3', '19'})
+ylabel('Clusters')
+% set(gca, 'YTickLabel', {'Rearing', 'Tremor', 'wet-dog shaking', 'Jump', 'Optogenetic Stim' })
+set(gcf,'position',[100,100,800,100])
+
+% plot pupulation dopamine psth
+figure
+colors = cbrewer2('div', 'RdYlBu', 4);
+fb = fb_extract_doric;
+h1 = fb.boundedline_plot(psth_summary_time, psth_cluster_01, colors(1,:));
+hold on
+h2 = fb.boundedline_plot(psth_summary_time, psth_cluster_02, colors(2,:));
+h3 = fb.boundedline_plot(psth_summary_time, psth_cluster_03, colors(3,:));
+h4 = fb.boundedline_plot(psth_summary_time, psth_cluster_04, colors(4,:));
+ylim([-1, 2.5])
+legend([h1, h2, h3, h4], {'Cluster # 1', 'Cluster # 2','Cluster # 3', 'Cluster #4'})
+set(gcf,'position',[100,100,600,600])
 
