@@ -1,5 +1,5 @@
 %% try to cluster behaviors
-function [groupdata, cluster_id] = behavior_analysis_cluster(groupdata)
+function [groupdata, cluster_id] = behavior_analysis_cluster(groupdata, clusterN)
 baf = behavior_analysis_func;
 figure
 reward_summary = [];
@@ -36,7 +36,7 @@ reinstatment = reward_summary(:, 3)./(reward_summary(:, 3) + reward_summary(:, 1
 
 
 figure;
-cluster_id = baf.hierarchical_cluster([resistence, reinstatment]);
+cluster_id = baf.hierarchical_cluster([resistence, reinstatment], clusterN);
 % figure;
 % cluster_id = baf.hierarchical_cluster(reward_summary);
 colors = cbrewer2('div', 'RdYlBu', 4);

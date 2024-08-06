@@ -314,14 +314,14 @@ classdef behavior_analysis_func
             set(gcf,'position',[100,100,800,400])
         end
         
-        function T = hierarchical_cluster(obj, resp_ap)
+        function T = hierarchical_cluster(obj, resp_ap, clusterN)
 
             resp_ap_scaled = (resp_ap - mean(resp_ap, 1))./std(resp_ap, 1);
             % resp_ap_scaled = resp_ap./max(resp_ap,[],1);
             % resp_ap_scaled = resp_ap;
 
             Z = linkage(resp_ap_scaled,'ward','euclidean');
-            clusterN = 4;
+            % clusterN = 4;
             T = cluster(Z,'maxclust',clusterN); % edit by ke, increase the cluster from 9 to 16.
             cutoff =  Z(end-clusterN+2,3);
             figure

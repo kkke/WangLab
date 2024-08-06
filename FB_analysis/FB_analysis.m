@@ -1327,7 +1327,8 @@ time_avg = [];
 psth_avg = [];
 for i= 1:length(groupdata)
     [time_avg(:, i), psth_avg(:, i)] = fb.groupplot_psth_individual_infusion(groupdata, i);
-    
+    set(gcf,'position',[100,100,600,600])
+
 end
 set(gcf,'position',[100,100,600,600])
 

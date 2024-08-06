@@ -322,9 +322,9 @@ classdef fb_extract_doric
                 data(i).rDAtime = h5read([filename, '_rDA_DFF1.doric'], ['/DataProcessed/FPConsole/DFFSignals1/', series{i}, '/AIN01xAOUT03-LockIn/Time']);
 
             end
-             all_data = data;
+            all_data = data;
         end
-            
+
         function [psth_time,psth_signal, fig] = psth_fb(obj, data,time, event, pre, post, plot_var, fig_title)
             %UNTITLED4 Summary of this function goes here
             %   Detailed explanation goes here
@@ -339,62 +339,69 @@ classdef fb_extract_doric
             index = [];
             psth_signal = zeros(sample_size, length(event));
             psth_time   = zeros(sample_size, length(event));
-            for i = 1:length(event)
-                index = find(time> event(i) + pre & time < event(i) + post);
-                if length(index)< sample_size
-                    psth_time(:, i) = NaN;
-                    psth_signal(:,i) = NaN;
+            if isempty(event)
+                % psth_signal = NaN;
+                % psth_time   = NaN;
+                fig = [];
+            else
+                for i = 1:length(event)
+                    index = find(time> event(i) + pre & time < event(i) + post);
+                    if length(index)< sample_size
+                        psth_time(:, i) = NaN;
+                        psth_signal(:,i) = NaN;
+                    else
+                        psth_time(:, i) = time(index(1:sample_size)) -  event(i);
+                        psth_signal(:,i) = data(index(1:sample_size));
+                    end
+                end
+                % Remove NaN column
+                idx = ~any(isnan(psth_signal), 1);
+                psth_signal = psth_signal(:, idx);
+                idx2 = ~any(isnan(psth_time), 1);
+                psth_time    = psth_time(:, idx2);
+                if plot_var ==1
+                    fig = figure;
+                    subplot(2,1,1)
+                    plot(mean(psth_time, 2, 'omitnan'), mean(psth_signal, 2, 'omitnan'), 'k')
+                    hold on
+                    x = mean(psth_time, 2, 'omitnan');
+                    y = mean(psth_signal, 2, 'omitnan');
+                    e = std(psth_signal,1, 2, 'omitmissing')/sqrt(size(psth_signal, 2));
+                    boundedline(x, y, e, '-k');
+                    xlabel('Time (s)')
+                    ylabel('Z \Delta F/F')
+                    xlim([min(mean(psth_time, 2, 'omitnan')), max(mean(psth_time, 2, 'omitnan'))])
+                    % ylim([-0.1, 0.1])
+                    ylim([-1, 1])
+                    plot([0, 0], [-1, 1], 'r--')
+                    plot([19.50, 19.50], [-1, 1], '--')
+                    plot([40.00, 40.00], [-1, 1], '--')
+                    title(fig_title)
+
+                    box off
+                    set(gca,'TickDir','out')
+                    set(gca,'fontsize',12)
+                    set(gca,'TickLengt', [0.015 0.015]);
+                    set(gca, 'LineWidth',1)
+                    set(gcf,'position',[100,100,300,400])
+                    subplot(2, 1, 2)
+                    imagesc(mean(psth_time, 2, 'omitnan'),[] ,psth_signal')
+                    % colorbar
+                    xlabel('Time (s)')
+                    ylabel('Trials')
+                    set(gca,'TickDir','out')
+                    set(gca,'fontsize',12)
+                    set(gca,'TickLengt', [0.015 0.015]);
+                    set(gca, 'LineWidth',1)
+                    set(gcf,'position',[100,100,600,600])
+                    colormap('jet')
+                    clim([-2, 5])
+                    box off
                 else
-                    psth_time(:, i) = time(index(1:sample_size)) -  event(i);
-                    psth_signal(:,i) = data(index(1:sample_size));
+                    fig = [];
                 end
             end
-            % Remove NaN column
-            idx = ~any(isnan(psth_signal), 1);
-            psth_signal = psth_signal(:, idx);
-            idx2 = ~any(isnan(psth_time), 1);
-            psth_time    = psth_time(:, idx2);
-            if plot_var ==1
-                fig = figure;
-                subplot(2,1,1)
-                plot(mean(psth_time, 2, 'omitnan'), mean(psth_signal, 2, 'omitnan'), 'k')
-                hold on
-                x = mean(psth_time, 2, 'omitnan');
-                y = mean(psth_signal, 2, 'omitnan');
-                e = std(psth_signal,1, 2, 'omitmissing')/sqrt(size(psth_signal, 2));
-                boundedline(x, y, e, '-k');
-                xlabel('Time (s)')
-                ylabel('Z \Delta F/F')
-                xlim([min(mean(psth_time, 2, 'omitnan')), max(mean(psth_time, 2, 'omitnan'))])
-                % ylim([-0.1, 0.1])
-                ylim([-1, 1])
-                plot([0, 0], [-1, 1], 'r--')
-                plot([19.50, 19.50], [-1, 1], '--')
-                plot([40.00, 40.00], [-1, 1], '--')
-                title(fig_title)
 
-                box off
-                set(gca,'TickDir','out')
-                set(gca,'fontsize',12)
-                set(gca,'TickLengt', [0.015 0.015]);
-                set(gca, 'LineWidth',1)
-                set(gcf,'position',[100,100,300,400])
-                subplot(2, 1, 2)
-                imagesc(mean(psth_time, 2, 'omitnan'),[] ,psth_signal')
-                % colorbar
-                xlabel('Time (s)')
-                ylabel('Trials')
-                set(gca,'TickDir','out')
-                set(gca,'fontsize',12)
-                set(gca,'TickLengt', [0.015 0.015]);
-                set(gca, 'LineWidth',1)
-                set(gcf,'position',[100,100,300,400])
-                colormap('jet')
-                clim([-1, 1])
-                box off
-            else
-                fig = [];
-            end
         end
 
         function Pairline_plot(obj, a)
@@ -578,7 +585,7 @@ classdef fb_extract_doric
         end
 
         function bar_plot_three(obj, data1, data2, data3)
-            
+
             delt_amp_cluster01 = data1;
             delt_amp_cluster02 = data2;
             delt_amp_cluster03 = data3;
@@ -605,9 +612,9 @@ classdef fb_extract_doric
             scatter(1 + 0.3* (rand(size(delt_amp_cluster01))-0.5), delt_amp_cluster01, 'k', 'MarkerFaceColor','k')
             scatter(2 + 0.3* (rand(size(delt_amp_cluster02))-0.5), delt_amp_cluster02, 'k', 'MarkerFaceColor','k')
             scatter(3 + 0.3* (rand(size(delt_amp_cluster03))-0.5), delt_amp_cluster03, 'k', 'MarkerFaceColor','k')
-        
-        
-        
+
+
+
         end
         function anova1_three(obj, data1, data2, data3)
             data = [data1, data2, data3];
@@ -618,146 +625,146 @@ classdef fb_extract_doric
 
         end
 
-%%%%%%%%%%%%%%%%%%%%% function of master plots for groupdata%%%%%%%%%%%
-function [time_avg, psth_avg] = groupplot_psth_individual_infusion(obj, groupdata, i)
-    data_for_plot = [groupdata(i).data_perSession(1).psth_infusion, groupdata(i).data_perSession(2).psth_infusion, ...
-        groupdata(i).data_perSession(3).psth_infusion];
-    time_for_plot = [groupdata(i).data_perSession(1).infusion_time, groupdata(i).data_perSession(2).infusion_time, ...
-        groupdata(i).data_perSession(3).infusion_time];
-    trial_nan = [];
-    for i = 1:size(data_for_plot,2)
-        if isnan(data_for_plot(1,i))
-            trial_nan = [trial_nan, i];
+        %%%%%%%%%%%%%%%%%%%%% function of master plots for groupdata%%%%%%%%%%%
+        function [time_avg, psth_avg] = groupplot_psth_individual_infusion(obj, groupdata, i)
+            data_for_plot = [groupdata(i).data_perSession(1).psth_infusion, groupdata(i).data_perSession(2).psth_infusion, ...
+                groupdata(i).data_perSession(3).psth_infusion];
+            time_for_plot = [groupdata(i).data_perSession(1).infusion_time, groupdata(i).data_perSession(2).infusion_time, ...
+                groupdata(i).data_perSession(3).infusion_time];
+            trial_nan = [];
+            for i = 1:size(data_for_plot,2)
+                if isnan(data_for_plot(1,i))
+                    trial_nan = [trial_nan, i];
+                end
+            end
+            data_for_plot(:,trial_nan)  = [];
+            time_for_plot(:, trial_nan) = [];
+
+            figure;
+            subplot(2, 1, 1)
+            x = mean(time_for_plot, 2, 'omitnan');
+            y = mean(data_for_plot, 2, 'omitnan');
+            e = std(data_for_plot,1, 2, 'omitmissing')/sqrt(size(data_for_plot, 2));
+            boundedline(x, y, e, '-k');
+            xlabel('Time (s)')
+            ylabel('Z \Delta F/F')
+            xlim([min(mean(time_for_plot, 2, 'omitnan')), max(mean(time_for_plot, 2, 'omitnan'))])
+            xlim([-10, 50])
+
+            hold on
+            ylim([-1, 3])
+            plot([0, 0], [-1, 1], 'r--')
+            plot([19.50, 19.50], [-1, 1], '--')
+            plot([40.00, 40.00], [-1, 1], '--')
+            box off
+            set(gca,'TickDir','out')
+            set(gca,'fontsize',12)
+            set(gca,'TickLengt', [0.015 0.015]);
+            set(gca, 'LineWidth',1)
+            set(gcf,'position',[100,100,300,400])
+            subplot(2, 1, 2)
+            imagesc(mean(time_for_plot, 2), [], data_for_plot')
+            % colorbar
+            xlabel('Time (s)')
+            ylabel('Trials')
+            xlim([-10, 50])
+
+            set(gca,'TickDir','out')
+            set(gca,'fontsize',12)
+            set(gca,'TickLengt', [0.015 0.015]);
+            set(gca, 'LineWidth',1)
+            set(gcf,'position',[100,100,900,400])
+            colormap('jet')
+            clim([-2, 5])
+            box off
+            time_avg = mean(time_for_plot, 2);
+            psth_avg = mean(data_for_plot, 2);
         end
-    end
-    data_for_plot(:,trial_nan)  = [];
-    time_for_plot(:, trial_nan) = [];
+        function groupplot_psth_avg(obj, time_avg, psth_avg)
+            figure;
+            subplot(2, 1, 1)
+            x = mean(time_avg, 2, 'omitnan');
+            y = mean(psth_avg, 2, 'omitnan');
+            e = std(psth_avg,1, 2, 'omitmissing')/sqrt(size(psth_avg, 2));
+            boundedline(x, y, e, '-k');
+            xlabel('Time (s)')
+            ylabel('Z \Delta F/F')
+            xlim([min(mean(time_avg, 2, 'omitnan')), max(mean(time_avg, 2, 'omitnan'))])
+            xlim([-10, 50])
+            hold on
+            ylim([-1, 2])
+            plot([0, 0], [-1, 1], 'r--')
+            plot([19.50, 19.50], [-1, 1], '--')
+            plot([40.00, 40.00], [-1, 1], '--')
+            box off
+            set(gca,'TickDir','out')
+            set(gca,'fontsize',12)
+            set(gca,'TickLengt', [0.015 0.015]);
+            set(gca, 'LineWidth',1)
+            set(gcf,'position',[100,100,300,400])
 
-    figure;
-    subplot(2, 1, 1)
-    x = mean(time_for_plot, 2, 'omitnan');
-    y = mean(data_for_plot, 2, 'omitnan');
-    e = std(data_for_plot,1, 2, 'omitmissing')/sqrt(size(data_for_plot, 2));
-    boundedline(x, y, e, '-k');
-    xlabel('Time (s)')
-    ylabel('Z \Delta F/F')
-    xlim([min(mean(time_for_plot, 2, 'omitnan')), max(mean(time_for_plot, 2, 'omitnan'))])
-        xlim([-10, 50])
+            psth_avg(:, any(isnan(psth_avg), 1)) = [];
+            time_avg(:, any(isnan(time_avg), 1)) = [];
 
-    hold on
-    ylim([-1, 3])
-    plot([0, 0], [-1, 1], 'r--')
-    plot([19.50, 19.50], [-1, 1], '--')
-    plot([40.00, 40.00], [-1, 1], '--')
-    box off
-    set(gca,'TickDir','out')
-    set(gca,'fontsize',12)
-    set(gca,'TickLengt', [0.015 0.015]);
-    set(gca, 'LineWidth',1)
-    set(gcf,'position',[100,100,300,400])
-    subplot(2, 1, 2)
-    imagesc(mean(time_for_plot, 2), [], data_for_plot')
-    % colorbar
-    xlabel('Time (s)')
-    ylabel('Trials')
-        xlim([-10, 50])
+            subplot(2, 1, 2)
+            imagesc(mean(time_avg, 2), [], psth_avg')
+            % colorbar
+            xlabel('Time (s)')
+            xlim([-10, 50])
+            ylabel('Trials')
+            set(gca,'TickDir','out')
+            set(gca,'fontsize',12)
+            set(gca,'TickLengt', [0.015 0.015]);
+            set(gca, 'LineWidth',1)
+            set(gcf,'position',[100,100,900,400])
+            colormap('jet')
+            clim([-1, 3])
+            box off
+        end
+        function mdl = correlaiton_analysis_cluster(obj, resp, resistence, cluster_id)
+            colors = cbrewer2('div', 'RdYlBu', 4);
 
-    set(gca,'TickDir','out')
-    set(gca,'fontsize',12)
-    set(gca,'TickLengt', [0.015 0.015]);
-    set(gca, 'LineWidth',1)
-    set(gcf,'position',[100,100,900,400])
-    colormap('jet')
-    clim([-2, 5])
-    box off
-    time_avg = mean(time_for_plot, 2);
-    psth_avg = mean(data_for_plot, 2);
-end
-function groupplot_psth_avg(obj, time_avg, psth_avg)
-    figure;
-    subplot(2, 1, 1)
-    x = mean(time_avg, 2, 'omitnan');
-    y = mean(psth_avg, 2, 'omitnan');
-    e = std(psth_avg,1, 2, 'omitmissing')/sqrt(size(psth_avg, 2));
-    boundedline(x, y, e, '-k');
-    xlabel('Time (s)')
-    ylabel('Z \Delta F/F')
-    xlim([min(mean(time_avg, 2, 'omitnan')), max(mean(time_avg, 2, 'omitnan'))])
-    xlim([-10, 50])
-    hold on
-    ylim([-1, 2])
-    plot([0, 0], [-1, 1], 'r--')
-    plot([19.50, 19.50], [-1, 1], '--')
-    plot([40.00, 40.00], [-1, 1], '--')
-    box off
-    set(gca,'TickDir','out')
-    set(gca,'fontsize',12)
-    set(gca,'TickLengt', [0.015 0.015]);
-    set(gca, 'LineWidth',1)
-    set(gcf,'position',[100,100,300,400])
-
-    psth_avg(:, any(isnan(psth_avg), 1)) = [];
-    time_avg(:, any(isnan(time_avg), 1)) = [];
-
-    subplot(2, 1, 2)
-    imagesc(mean(time_avg, 2), [], psth_avg')
-    % colorbar
-    xlabel('Time (s)')
-    xlim([-10, 50])
-    ylabel('Trials')
-    set(gca,'TickDir','out')
-    set(gca,'fontsize',12)
-    set(gca,'TickLengt', [0.015 0.015]);
-    set(gca, 'LineWidth',1)
-    set(gcf,'position',[100,100,900,400])
-    colormap('jet')
-    clim([-1, 3])
-    box off
-end
-function mdl = correlaiton_analysis_cluster(obj, resp, resistence, cluster_id) 
-    colors = cbrewer('div', 'RdYlBu', 4);
-
-    %
-    figure
-    mdl = fitlm(resp, resistence);
-    hold on
-    h1 = plot(mdl)
-    ylim([0, 0.8])
-    xlim([-1, 2.5])
-    xlabel('Dopamine')
-    ylabel('Resistence Score')
-    box off
-    set(gca,'TickDir','out')
-    set(gca,'fontsize',12)
-    set(gca,'TickLengt', [0.015 0.015]);
-    set(gca, 'LineWidth',1)
-    set(gcf,'position',[100,100,400,400])
-    scatter(resp, resistence)
-    hold on
-    scatter(resp(cluster_id==1), resistence(cluster_id ==1), 'MarkerFaceColor',colors(1,:), 'MarkerEdgeColor','w')
-    hold on
-    scatter(resp(cluster_id==2), resistence(cluster_id ==2), 'MarkerFaceColor',colors(2,:), 'MarkerEdgeColor','w')
-    scatter(resp(cluster_id==3), resistence(cluster_id ==3), 'MarkerFaceColor',colors(3,:), 'MarkerEdgeColor','w')
-    scatter(resp(cluster_id==4), resistence(cluster_id ==4), 'MarkerFaceColor',colors(4,:), 'MarkerEdgeColor','w')
-    ylim([0, 0.8])
-    xlim([-1, 2.5])
-    xlabel('Dopamine')
-    ylabel('Resistence Score')
-    box off
-    set(gca,'TickDir','out')
-    set(gca,'fontsize',12)
-    set(gca,'TickLengt', [0.015 0.015]);
-    set(gca, 'LineWidth',1)
-    set(gcf,'position',[100,100,400,400])
+            %
+            figure
+            mdl = fitlm(resp, resistence);
+            hold on
+            h1 = plot(mdl)
+            ylim([0, 0.8])
+            xlim([-1, 2.5])
+            xlabel('Dopamine')
+            ylabel('Resistence Score')
+            box off
+            set(gca,'TickDir','out')
+            set(gca,'fontsize',12)
+            set(gca,'TickLengt', [0.015 0.015]);
+            set(gca, 'LineWidth',1)
+            set(gcf,'position',[100,100,400,400])
+            scatter(resp, resistence)
+            hold on
+            scatter(resp(cluster_id==1), resistence(cluster_id ==1), 'MarkerFaceColor',colors(1,:), 'MarkerEdgeColor','w')
+            hold on
+            scatter(resp(cluster_id==2), resistence(cluster_id ==2), 'MarkerFaceColor',colors(2,:), 'MarkerEdgeColor','w')
+            scatter(resp(cluster_id==3), resistence(cluster_id ==3), 'MarkerFaceColor',colors(3,:), 'MarkerEdgeColor','w')
+            scatter(resp(cluster_id==4), resistence(cluster_id ==4), 'MarkerFaceColor',colors(4,:), 'MarkerEdgeColor','w')
+            ylim([0, 0.8])
+            xlim([-1, 2.5])
+            xlabel('Dopamine')
+            ylabel('Resistence Score')
+            box off
+            set(gca,'TickDir','out')
+            set(gca,'fontsize',12)
+            set(gca,'TickLengt', [0.015 0.015]);
+            set(gca, 'LineWidth',1)
+            set(gcf,'position',[100,100,400,400])
 
 
-end
-    
-    
-    
-    
-    
-    
+        end
+
+
+
+
+
+
     end
 
 
