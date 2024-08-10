@@ -78,7 +78,7 @@ for i = 1:3
     
     b(j).CData = colors(j, :);
     hold on
-    errorbar(j, mean_value, sem_value,'k.', 'LineWidth', 1.5, 'CapSize',10)
+    errorbar(j, mean_value, sem_value,'k.', 'LineWidth', 1, 'CapSize',10)
     scatter(j + 0.3* (rand(size(cluster_temp(:, i)))-0.5), cluster_temp(:, i), 'k', 'MarkerFaceColor','k')
     
     xlabel('Cluster #');

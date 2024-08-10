@@ -6,7 +6,7 @@ load("Cocaine_Seeking_data.mat")
 events = {'infusion', 'leverInsertion', 'leverRetraction'};
 pre = -10; % time before event, sec
 post = 50; % time after event, sec
-plot_tf = 1; % plot: 1; not plot: 0
+plot_tf = 0; % plot: 1; not plot: 0
 psth_summary =[];
 psth_summary_avg =[];
 for i = 1:length(groupdata)
