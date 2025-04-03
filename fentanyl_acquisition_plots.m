@@ -58,10 +58,13 @@ end
 figure
 baf.FR_plot(summary_acquisition(1).data, 900)
 baf.line_plot_MA_avg(data_plot.activeLever', data_plot.inactiveLever')
+ylim([0,1200])
+set(gcf,'position',[1500,600,340,340])
 saveas(gcf, 'Fentanyl_Acquisition_LeverPress.pdf');
 % plot the infusion counts
 figure;
 baf.FR_plot(summary_acquisition(1).data, 100)
 ylim([0, 140])
 baf.line_plot_errorbar(data_plot.infusion','k', 'Infusion #')
+set(gcf,'position',[1500,600,340,340])
 saveas(gcf, 'Fentanyl_Acquisition_Infusion.pdf');
