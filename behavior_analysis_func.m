@@ -4,7 +4,7 @@ classdef behavior_analysis_func
             %UNTITLED Summary of this function goes here
             %   Detailed explanation goes here
             figure
-            colors = cbrewer('div', 'RdYlBu', 4);
+            colors = cbrewer2('div', 'RdYlBu', 4);
             subplot(1, 3, 1)
             % obj.FR_plot(summarydata)
             hold on
@@ -76,7 +76,7 @@ classdef behavior_analysis_func
 
             end
             hold on
-            colors = cbrewer('div', 'RdYlBu', 4);
+            colors = cbrewer2('div', 'RdYlBu', 4);
             
             fr1 = find(summarydata.FR ==1);
             rectangle('position', [fr1(1), 1, fr1(end)-fr1(1), high], 'FaceColor', [colors(4,:),0.3], 'EdgeColor', 'none')
@@ -102,7 +102,7 @@ classdef behavior_analysis_func
                 legend1 = 'Active Lever';
                 legend2 = 'Inactive Lever';
             end
-            colors = cbrewer('div', 'RdYlBu', 6);
+            colors = cbrewer2('div', 'RdYlBu', 6);
             h1 = errorbar(mean(data1,1, "omitnan"), std(data1, 0, 1, "omitmissing")./sqrt(size(data1, 1)), '-o', 'color', colors(1,:), 'LineWidth', 1);
             set(h1, 'LineWidth', 1)
             set(h1, 'MarkerFaceColor', 'w')
@@ -124,6 +124,7 @@ classdef behavior_analysis_func
             set(gca,'TickLengt', [0.015 0.015]);
             set(gca, 'LineWidth',1)
             set(gcf,'position',[100,600,400,400])
+            set(gcf, 'Color', 'white')
         end
 
         function line_plot_MA(obj, data1, data2, legend1, legend2)
@@ -173,6 +174,7 @@ classdef behavior_analysis_func
             set(gca,'TickLengt', [0.015 0.015]);
             set(gca, 'LineWidth',1)
             set(gcf,'position',[100,600,400,400])
+            set(gcf, 'Color', 'white')
         end
         function line_plot_pr_ratio(obj, data, pr)
             figure;
@@ -314,6 +316,54 @@ classdef behavior_analysis_func
             set(gcf,'position',[100,100,800,400])
         end
         
+        function raster_plot(obj,timestamps)
+            colors = cbrewer2('div', 'RdYlBu', 6);
+            cue = timestamps.cue;
+            front_lever = timestamps.front_lever;
+            back_lever = timestamps.back_lever; 
+            reward     = timestamps.reward;
+            % get the peri-event of the lever press and reward
+            for i = 1:length(cue)-1
+                time_range = [cue(i), cue(i+1)];
+                perievent_back(i).times   = back_lever(find(back_lever > time_range(1) & back_lever < time_range(2))) -   cue(i);
+                perievent_front(i).times  = front_lever(find(front_lever > time_range(1) & front_lever < time_range(2)))- cue(i);
+                perievent_reward(i).times = reward(find(reward > time_range(1) & reward < time_range(2)))- cue(i);
+            end
+
+            %plot the peri-event raster of lever pressing and reward
+            figure;
+            hold on
+            for i = 1:length(cue)-1
+                if ~isempty(perievent_front(i).times)
+                    h1 = plot([perievent_front(i).times; perievent_front(i).times], [i, i+1], 'color',colors(1,:));
+                end
+            end
+
+
+            hold on
+            for i = 1:length(cue)-1
+                if ~isempty(perievent_back(i).times)
+                    h3 = plot([perievent_back(i).times; perievent_back(i).times], [i, i+1], 'color', colors(6,:));
+                end
+            end
+
+            hold on
+            for i = 1:length(cue)-1
+                h2 = plot([perievent_reward(i).times; perievent_reward(i).times], [i, i+1], 'k');
+            end
+
+            xlabel('Time (s)')
+            ylabel('Trial #')
+            xlim([-10,300])
+            box off
+            set(gca,'TickDir','out')
+            set(gca,'fontsize',12)
+            set(gca,'TickLengt', [0.015 0.015]);
+            set(gca, 'LineWidth',1)
+            set(gcf,'position',[100,100,800,400])
+        end
+
+
         function T = hierarchical_cluster(obj, resp_ap, clusterN)
 
             resp_ap_scaled = (resp_ap - mean(resp_ap, 1))./std(resp_ap, 1);
