@@ -483,6 +483,29 @@ classdef behavior_analysis_func
 
             set(gcf,'position',[100,100,800,400])
         end
-    
+        function barplot_scatter(obj, data)
+            colors = cbrewer2('div', 'RdYlBu', 4);
+            for i = 1:length(data)
+                mean_value = mean(data{i});
+                sem_value = std(data{i})/sqrt(length(data{i}));
+                b = bar(i, mean_value);
+                b.FaceColor = 'flat';
+                b.CData(1,:) = colors(i, :);
+                hold on
+                errorbar(i, mean_value, sem_value,'k.', 'LineWidth', 1, 'CapSize',10)
+                scatter(i + 0.3* (rand(size(data{i}))-0.5), data{i}, 'k', 'MarkerFaceColor','k')                
+                xlabel('Cluster #');
+                ylabel('Infusion #');
+            end
+            box off
+            set(gca,'TickDir','out')
+            set(gca,'fontsize',12)
+            set(gca,'TickLengt', [0.015 0.015]);
+            set(gca, 'LineWidth',1)
+            set(gcf,'position',[100,100,200,340])
+            set(gca,'XTick',[1, 2, 3, 4])
+    % ttest2()
+
+        end
     end
 end
