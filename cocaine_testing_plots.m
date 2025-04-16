@@ -37,7 +37,7 @@ for i = 1:length(summary_testing)
 end
 %% plot the active and inactive lever press
 figure
-rectangle('Position',[3.5, 1, 3, 600], 'FaceColor', [0.8, 0, 0, 0.4], 'EdgeColor', 'none');
+rectangle('Position',[3.5, 1, 3, 600], 'FaceColor', [0.8, 0, 0, 0.1], 'EdgeColor', 'none','FaceAlpha', 0.4);
 hold on
 baf.line_plot_MA_avg(data_plot.activeLever', data_plot.inactiveLever')
 xlim([0, 8])
@@ -55,7 +55,7 @@ saveas(gcf, 'Cocaine_Testing_LeverPress.pdf');
 %% plot the infusion counts
 figure;
 
-rectangle('Position',[3.5, 1, 3, 90], 'FaceColor', [0.8, 0, 0, 0.4], 'EdgeColor', 'none');
+rectangle('Position',[3.5, 1, 3, 90], 'FaceColor', [0.8, 0, 0, 0.4], 'EdgeColor', 'none', 'FaceAlpha', 0.4);
 hold on
 baf.line_plot_errorbar(data_plot.infusion','k', 'Infusion #')
 xlim([0, 8])
