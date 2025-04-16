@@ -63,14 +63,13 @@ data.seeking.cluster = cluster;
 data.seeking.reinstatement = reinstatement_score;
 data.seeking.time_avg = time_avg;
 data.seeking.psth_avg_nonnorm = psth_avg;
-%% plot the resp based on cluster
+%% plot the resp (0-1s) based on cluster
 figure
 colors = cbrewer2('div', 'RdYlBu', 4);
 clusterID = unique(cluster);
 for i = 1:length(clusterID)
     cluster_index = find(cluster == i);
     resp_cluster{i} = resp(:, cluster_index)';
-    resp2_cluster{i} = resp2(:, cluster_index)';
     mean_resp = mean(resp_cluster{i}, 'omitmissing');
     sem_resp = std(resp_cluster{i}, 'omitmissing')/sqrt(length(resp_cluster{i}));
     b = bar(i, mean_resp);
@@ -84,7 +83,7 @@ end
 xlabel('Cluster #');
 ylabel('DA response (0 -1s norm. z-score)');
 set(gcf,'position',[100,100,300,300])
-%%
+%% plot the resp (0-20s) based on cluster
 figure
 colors = cbrewer2('div', 'RdYlBu', 4);
 clusterID = unique(cluster);
