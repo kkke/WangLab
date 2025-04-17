@@ -79,13 +79,13 @@ classdef behavior_analysis_func
             colors = cbrewer2('div', 'RdYlBu', 4);
             
             fr1 = find(summarydata.FR ==1);
-            rectangle('position', [fr1(1), 1, fr1(end)-fr1(1), high], 'FaceColor', [colors(4,:),0.3], 'EdgeColor', 'none')
+            rectangle('position', [fr1(1), 1, fr1(end)-fr1(1), high], 'FaceColor', [35,31,32]/255, 'FaceAlpha', 0.05, 'EdgeColor', 'none')
             text(fr1(1), high + 40, 'FR1')
             fr2 = find(summarydata.FR ==2);
-            rectangle('position', [fr2(1), 1, fr2(end)-fr2(1), high], 'FaceColor', [colors(4,:),0.5], 'EdgeColor', 'none')
+            rectangle('position', [fr2(1), 1, fr2(end)-fr2(1), high], 'FaceColor', [35,31,32]/255, 'FaceAlpha', 0.15, 'EdgeColor', 'none')
             text(fr2(1), high + 40, 'FR2')
             fr4 = find(summarydata.FR ==4);
-            rectangle('position', [fr4(1), 1, fr4(end)-fr4(1), high], 'FaceColor', [colors(4,:),0.7], 'EdgeColor', 'none')
+            rectangle('position', [fr4(1), 1, fr4(end)-fr4(1), high], 'FaceColor', [35,31,32]/255, 'FaceAlpha', 0.30, 'EdgeColor', 'none')
             text(fr4(1), high + 40, 'FR4')
         end
 
