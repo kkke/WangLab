@@ -147,14 +147,6 @@ fb = fb_extract_doric;
 fb.groupplot_psth_avg(psth_time, population_psth_avg);
 set(gcf,'position',[100,100,340,340])
 
-% normalized to baseline
-baseline_time = 10;
-baseline_index = find(psth_time>-baseline_time & psth_time< 0);
-baseline = mean(population_psth_avg(baseline_index,:));
-norm_population_psth_avg = population_psth_avg - baseline;
-% plot normalized response
-fb.groupplot_psth_avg(psth_time, norm_population_psth_avg);
-set(gcf,'position',[100,100,340,340])
 
 % % response profile
 % for i = 1:size(norm_population_psth_avg, 2)
@@ -165,33 +157,58 @@ set(gcf,'position',[100,100,340,340])
 %% sort the responses based on counts of all infusions of that sessions
 trial_counts = arrayfun(@(x) x.behavior.reward_all, data_to_plot);
 [B,sort_index] = sort(trial_counts, 'descend');
-fb.groupplot_psth_avg(psth_time, norm_population_psth_avg(:, sort_index)); % sorted based one infusion counts
-set(gcf,'position',[100,100,340,340])
-%% correlation analysis- sustained 
-time_sustained = [0, 19.5];
-time_phasic    = [0, 1];
-phasic_index = find(psth_time>0& psth_time< 1);
-sustained_index = find(psth_time>0 & psth_time< 19.5);
-value_sustained = mean(norm_population_psth_avg(sustained_index, :), 1);
-value_phasic    = mean(norm_population_psth_avg(phasic_index, :), 1);
-mdl = fb.correlaiton_analysis_cluster(value_sustained, trial_counts, []);
-xlim([0, 1.5])
-xlabel('Average Sustained DA')
-ylim([30, 100])
-ylabel('Infusion Counts')
-set(gcf,'position',[100,100,340,340])
-
-%% correlation analysis- sustained 
-
-mdl = fb.correlaiton_analysis_cluster(value_phasic, trial_counts, []);
-xlim([-1, 1])
-xlabel('Average Phasic DA')
-ylim([30, 100])
-ylabel('Infusion Counts')
-set(gcf,'position',[100,100,340,340])
+% normalized to baseline
+population_psth_fp_sorted(psth_time, population_psth_avg, sort_index, trial_counts)
 
 %% Single-trial analysis
+events = {'infusion', 'leverInsertion', 'leverRetraction'};
+k = 1; % choose infusion to align
+pre = -10; % time before event, sec
+post = 50; % time after event, sec
+plot_tf = 0; % plot: 1; not plot: 0
+psth_summary =[];
+psth_summary_avg =[];
+baseline_data = [];
+baseline_data_trial01 = []
+for i = 1:length(data_to_plot)
+    [psth_time,baseline_data(i).psth_infusion, fig] = fb.psth_fb(data_to_plot(i).signal, data_to_plot(i).time,data_to_plot(i).(events{k}), pre, post, plot_tf, events{k});
+    baseline_data(i).psth_infusion_avg = mean(baseline_data(i).psth_infusion, 2, 'omitmissing');
+    baseline_data(i).psth_infusion_time = mean(psth_time, 2, 'omitmissing');
+    baseline_data_trial01(:, i)           = baseline_data(i).psth_infusion(:, 1);
+end
 
+% check the 1st trial
+%% correlation analysis- sustained- 1st trial
+close all
+population_psth_fp_sorted(psth_time(:, 1), baseline_data_trial01, sort_index, trial_counts)
+figure(1)
+clim([-2, 5])
+figure(2)
+xlim([0, 5])
+figure(3)
+xlim([0, 3])
+%% calculate the fano factor
+psth_time = psth_time(:, 1);
+baseline_index = find(psth_time> -10 & psth_time < 0);
+sustained_index = find(psth_time> 0 & psth_time < 19.5);
+fano_value = [];
+for i = 1:length(baseline_data)
+    basline_value = baseline_data(i).psth_infusion(baseline_index, :);
+    sustained_value = baseline_data(i).psth_infusion(sustained_index, :);
+    evoked_resp     = mean(sustained_value, 1) -  mean(basline_value);
+    fano_value(i) = var(evoked_resp)/mean(evoked_resp);
+end
+figure;
+mdl = fb.correlaiton_analysis_cluster(fano_value, trial_counts, []);
+xlim([0, 10])
+xlabel('Fano Factor of Sustained DA')
+ylim([30, 100])
+ylabel('Infusion Counts')
+set(gcf,'position',[100,100,340,340])
+
+%% calculate responsive proportion
+
+%% check the video, and find animal's state
 
 
 
