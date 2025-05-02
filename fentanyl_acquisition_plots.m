@@ -1,8 +1,8 @@
 % In your summary folder, summarize all data into a single file
 clear; close all;clc
 % go the data folder
-cd('C:\Users\KeChen\MIT Dropbox\Ke Chen\Wang Lab\Manuscripts\DA_Cocaine_Fentanyl\Figures\Figure1\Data\Fentanyl_Acquisition')
-
+% cd('C:\Users\KeChen\MIT Dropbox\Ke Chen\Wang Lab\Manuscripts\DA_Cocaine_Fentanyl\Figures\Figure1\Data\Fentanyl_Acquisition')
+cd('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/Fentanyl_Acquisition')
 files = dir('*Acquisition_data.mat');
 % contruct a summary dictionary containing all data 
 summary_acquisition = [];
@@ -15,12 +15,14 @@ for i = 1:length(files)
     summary_acquisition(i).FR2 = find(summarydata.FR == 2);
     summary_acquisition(i).FR4 = find(summarydata.FR == 4);
 end
-cd('C:\Users\KeChen\MIT Dropbox\Ke Chen\Wang Lab\Manuscripts\DA_Cocaine_Fentanyl\Figures\Figure1\Data')
+% cd('C:\Users\KeChen\MIT Dropbox\Ke Chen\Wang Lab\Manuscripts\DA_Cocaine_Fentanyl\Figures\Figure1\Data')
+cd('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data')
 save('Fentanyl_acquisition_summary.mat', 'summary_acquisition')
 %% plot the lever press and infusion counts
 clear; close all; clc;
 baf = behavior_analysis_func;
-load('C:\Users\KeChen\MIT Dropbox\Ke Chen\Wang Lab\Manuscripts\DA_Cocaine_Fentanyl\Figures\Figure1\Data\Fentanyl_acquisition_summary.mat')
+% load('C:\Users\KeChen\MIT Dropbox\Ke Chen\Wang Lab\Manuscripts\DA_Cocaine_Fentanyl\Figures\Figure1\Data\Fentanyl_acquisition_summary.mat')
+load('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/Fentanyl_acquisition_summary.mat')
 data_plot = [];
 data_plot.FR = summary_acquisition(1).data.FR;
 % only plot the 9 sessions of FR1, 2 sessions of FR2 and 10 sessions of FR4
@@ -59,12 +61,12 @@ figure
 baf.FR_plot(summary_acquisition(1).data, 900)
 baf.line_plot_MA_avg(data_plot.activeLever', data_plot.inactiveLever')
 ylim([0,1200])
-set(gcf,'position',[1500,600,340,340])
+set(gcf,'position',[100,100,340,340])
 saveas(gcf, 'Fentanyl_Acquisition_LeverPress.pdf');
 % plot the infusion counts
 figure;
 baf.FR_plot(summary_acquisition(1).data, 100)
 ylim([0, 140])
 baf.line_plot_errorbar(data_plot.infusion','k', 'Infusion #')
-set(gcf,'position',[1500,600,340,340])
+set(gcf,'position',[500,100,340,340])
 saveas(gcf, 'Fentanyl_Acquisition_Infusion.pdf');

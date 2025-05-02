@@ -1,8 +1,8 @@
 % In your summary folder, summarize all data into a single file
 clear; close all;clc
 % go the data folder
-cd('C:\Users\KeChen\MIT Dropbox\Ke Chen\Wang Lab\Manuscripts\DA_Cocaine_Fentanyl\Figures\Figure1\Data\Fentanyl_ThreeHoursSessions')
-
+% cd('C:\Users\KeChen\MIT Dropbox\Ke Chen\Wang Lab\Manuscripts\DA_Cocaine_Fentanyl\Figures\Figure1\Data\Fentanyl_ThreeHoursSessions')
+cd('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/Fentanyl_ThreeHoursSessions')
 files = dir('*ThreeHoursSessions.mat');
 % contruct a summary dictionary containing all data 
 summary_testing = [];
@@ -18,13 +18,16 @@ for i = 1:length(files)
     summary_testing(i).shock_session     = shock_session;
 
 end
-cd('C:\Users\KeChen\MIT Dropbox\Ke Chen\Wang Lab\Manuscripts\DA_Cocaine_Fentanyl\Figures\Figure1\Data')
+% cd('C:\Users\KeChen\MIT Dropbox\Ke Chen\Wang Lab\Manuscripts\DA_Cocaine_Fentanyl\Figures\Figure1\Data')
+cd('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data')
 save('Fentanyl_testing_summary.mat', 'summary_testing')
 %% plot the lever press and infusion counts
 clear; close all; clc;
 baf = behavior_analysis_func;
-cd('C:\Users\KeChen\MIT Dropbox\Ke Chen\Wang Lab\Manuscripts\DA_Cocaine_Fentanyl\Figures\Figure1\Data\')
-load('C:\Users\KeChen\MIT Dropbox\Ke Chen\Wang Lab\Manuscripts\DA_Cocaine_Fentanyl\Figures\Figure1\Data\Fentanyl_testing_summary.mat')
+% cd('C:\Users\KeChen\MIT Dropbox\Ke Chen\Wang Lab\Manuscripts\DA_Cocaine_Fentanyl\Figures\Figure1\Data\')
+% load('C:\Users\KeChen\MIT Dropbox\Ke Chen\Wang Lab\Manuscripts\DA_Cocaine_Fentanyl\Figures\Figure1\Data\Fentanyl_testing_summary.mat')
+cd('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data')
+load('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/Fentanyl_testing_summary.mat')
 % plot the data drug infusion;
 data_plot = [];
 % only plot the 3 sessions of baseline, 3 sessions of punishments and 1
@@ -38,11 +41,12 @@ for i = 1:length(summary_testing)
 end
 %% plot the active and inactive lever press
 figure
+rectangle('Position',[3.5, 1, 3, 830], 'FaceColor', [0.8, 0, 0, 0.4], 'EdgeColor', 'none', 'FaceAlpha',0.4);
+hold on 
 baf.line_plot_MA_avg(data_plot.activeLever', data_plot.inactiveLever')
 xlim([0, 8])
-set(gcf,'position',[1500,600,340,340])
+set(gcf,'position',[100,100,340,340])
 
-rectangle('Position',[3.5, 1, 3, 830], 'FaceColor', [0.8, 0, 0, 0.4], 'EdgeColor', 'none');
 text(3.7, 815, 'Punishment', 'FontSize', 12, 'Color', 'r')
 text(3.6, 765, '0.2 mA Shock', 'FontSize',12)
 ylim([0, 1200])
@@ -57,9 +61,9 @@ saveas(gcf, 'Fentanyl_Testing_LeverPress.pdf');
 figure;
 baf.line_plot_errorbar(data_plot.infusion','k', 'Infusion #')
 xlim([0, 8])
-set(gcf,'position',[1500,600,340,340])
+set(gcf,'position',[500,100,340,340])
 % format figure
-rectangle('Position',[3.5, 1, 3, 90], 'FaceColor', [0.8, 0, 0, 0.4], 'EdgeColor', 'none');
+rectangle('Position',[3.5, 1, 3, 90], 'FaceColor', [0.8, 0, 0, 0.4], 'EdgeColor', 'none', 'FaceAlpha',0.4);
 text(3.7, 87, 'Punishment', 'FontSize', 12, 'Color', 'r')
 text(3.6, 80, '0.2 mA Shock', 'FontSize',12)
 ylim([0, 120])
@@ -109,11 +113,11 @@ set(gca,'fontsize',12)
 set(gca,'TickLengt', [0.015 0.015]);
 set(gca, 'LineWidth',1)
 set(gcf, 'Color', 'white')
-set(gcf,'position',[1500,600,340,340])
+set(gcf,'position',[100,600,340,340])
 
 % plot individual mice
 figure
-rectangle('Position',[3.5, 1, 3, 150], 'FaceColor', [0.8, 0, 0, 0.4], 'EdgeColor', 'none');
+rectangle('Position',[3.5, 1, 3, 150], 'FaceColor', [0.8, 0, 0, 0.4], 'EdgeColor', 'none', 'FaceAlpha',0.4);
 hold on
 plot(data_plot.infusion(1:6, index_01), '-o', 'MarkerFaceColor', colors(1,:), 'Color', colors(1,:))
 hold on
@@ -123,7 +127,7 @@ plot(data_plot.infusion(1:6, index_04), '-o', 'MarkerFaceColor', colors(4,:), 'C
 xlim([0, 6.5])
 xlabel('Sessions')
 ylabel('Infusion #')
-set(gcf,'position',[1500,600,340,340])
+set(gcf,'position',[500,600,340,340])
 ylim([0, 200])
 box off
 set(gca,'TickDir','out')
@@ -156,7 +160,7 @@ set(gca,'fontsize',12)
 set(gca,'TickLengt', [0.015 0.015]);
 set(gca, 'LineWidth',1)
 set(gca, 'YTickLabel', {'Baseline','Punishment', 'Extinction'})
-set(gcf,'position',[1500,600,340,340])
+set(gcf,'position',[1000,100,340,340])
 
 
 % plot based on clusters
@@ -183,7 +187,7 @@ set(gca,'fontsize',12)
 set(gca,'TickLengt', [0.015 0.015]);
 set(gca, 'LineWidth',1)
 set(gcf, 'Color', 'white')
-set(gcf,'position',[1500,600,340,340])
+set(gcf,'position',[1000,600,340,340])
 hold on
 plot([100, 100], [0, 400], '--k')
 plot([0, 200], [100, 100], '--k')
@@ -192,7 +196,7 @@ ylabel('Fentanyl Infusion With Footshock (% of Group)')
 
 % plot individual mice
 figure
-rectangle('Position',[3.5, 1, 3, 150], 'FaceColor', [0.8, 0, 0, 0.4], 'EdgeColor', 'none');
+rectangle('Position',[3.5, 1, 3, 150], 'FaceColor', [0.8, 0, 0, 0.4], 'EdgeColor', 'none','FaceAlpha', 0.4);
 hold on
 plot(data_plot.infusion(1:6, index_01), '-o', 'MarkerFaceColor', colors(1,:), 'Color', colors(1,:))
 hold on
@@ -202,7 +206,7 @@ plot(data_plot.infusion(1:6, index_04), '-o', 'MarkerFaceColor', colors(4,:), 'C
 xlim([0, 6.5])
 xlabel('Sessions')
 ylabel('Infusion #')
-set(gcf,'position',[1500,600,340,340])
+set(gcf,'position',[100,100,340,340])
 ylim([0, 200])
 box off
 set(gca,'TickDir','out')

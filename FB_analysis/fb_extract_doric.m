@@ -727,7 +727,7 @@ classdef fb_extract_doric
 
             %
             figure
-            mdl = fitlm(resp, resistence);
+            mdl = fitlm(resp, resistence)
             hold on
             h1 = plot(mdl)
             ylim([0, 0.8])
