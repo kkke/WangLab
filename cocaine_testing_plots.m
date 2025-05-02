@@ -7,7 +7,7 @@ files = dir('*ThreeHoursSessions.mat');
 summary_testing = [];
 for i = 1:length(files)
     load(files(i).name)
-% find the autoshaping, PR, and shock session
+    % find the autoshaping, PR, and shock session
     training_protocol = summarydata.training;
     recording_index = find(contains(training_protocol, 'Ephys'));
     shock_session     = find(contains(training_protocol, 'shock'));
@@ -15,6 +15,12 @@ for i = 1:length(files)
     summary_testing(i).data              = summarydata;
     summary_testing(i).recording_index   = recording_index;
     summary_testing(i).shock_session     = shock_session;
+    % add information about patency: sa81, sa110, SA150
+    if strcmp(summary_testing(i).animalID, 'sa81') | strcmp(summary_testing(i).animalID, 'sa110') | strcmp(summary_testing(i).animalID, 'SA150')
+        summary_testing(i).patency = false;
+    else
+        summary_testing(i).patency = true;
+    end
 
 end
 cd('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data')
@@ -24,6 +30,7 @@ clear; close all; clc;
 baf = behavior_analysis_func;
 cd('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data')
 load('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/Cocaine_testing_summary.mat')
+summary_testing = summary_testing([summary_testing.patency]);
 % plot the data drug infusion;
 data_plot = [];
 % only plot the 3 sessions of baseline, 3 sessions of punishments and 1
@@ -58,13 +65,15 @@ figure;
 rectangle('Position',[3.5, 1, 3, 90], 'FaceColor', [0.8, 0, 0, 0.4], 'EdgeColor', 'none', 'FaceAlpha', 0.4);
 hold on
 baf.line_plot_errorbar(data_plot.infusion','k', 'Infusion #')
+hold on
+plot(data_plot.infusion, 'Color', [0.8, 0.8, 0.8])
 xlim([0, 8])
 % format figure
 
 set(gcf,'position',[500,100,340,340])
 text(3.7, 87, 'Punishment', 'FontSize', 12, 'Color', 'r')
 text(3.6, 80, '0.2 mA Shock', 'FontSize',12)
-ylim([0, 120])
+ylim([0, 150])
 hold on
 plot([0.8, 6.5], [95, 95], 'Color', [221,28,119]/255, 'LineWidth',2)
 text(3, 100, 'Cocaine', 'FontSize', 12, 'Color', [221,28,119]/255, 'FontWeight','bold')
@@ -88,8 +97,8 @@ data_plot.n_extinction_score    = data_plot.extinction_score/mean( data_plot.ext
 hold on
 plot([100, 100], [0, 400], '--k')
 plot([0, 200], [100, 100], '--k')
-xlabel('Fentanyl Infusion (% of Group)')
-ylabel('Fentanyl Infusion With Footshock (% of Group)')
+xlabel('Cocaine Infusion (% of Group)')
+ylabel('Cocaine Infusion With Footshock (% of Group)')
 clusterID = 1:4;
 colors = cbrewer2('div', 'RdYlBu', 4);
 index_01 = find(data_plot.n_animal_avg_taking >1 & data_plot.n_animal_avg_punishment> 1);
