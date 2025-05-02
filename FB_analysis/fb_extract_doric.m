@@ -86,6 +86,7 @@ classdef fb_extract_doric
             data = [];
             all_data = [];
             data_str = '/DataAcquisition/FPConsole/Signals/';
+            % series = {'Series0001', 'Series0002'};
             series = {'Series0001', 'Series0002','Series0003'};
             for i = 1:length(series)
                 % Load Digital Input
@@ -372,11 +373,11 @@ classdef fb_extract_doric
                     ylabel('Z \Delta F/F')
                     xlim([min(mean(psth_time, 2, 'omitnan')), max(mean(psth_time, 2, 'omitnan'))])
                     % ylim([-0.1, 0.1])
-                    ylim([-1, 1])
+                    ylim([-2, 5])
                     plot([0, 0], [-1, 1], 'r--')
                     plot([19.50, 19.50], [-1, 1], '--')
                     plot([40.00, 40.00], [-1, 1], '--')
-                    % title(fig_title)
+                    title(fig_title)
 
                     box off
                     set(gca,'TickDir','out')
