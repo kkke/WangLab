@@ -14,6 +14,12 @@ for i = 1:length(files)
     summary_acquisition(i).FR1 = find(summarydata.FR == 1);
     summary_acquisition(i).FR2 = find(summarydata.FR == 2);
     summary_acquisition(i).FR4 = find(summarydata.FR == 4);
+    % add information about patency: SA81, SA110 and SA150 lost patency, tested before perfusion
+    if strcmp(summary_acquisition(i).animalID, 'SA81')| strcmp(summary_acquisition(i).animalID, 'SA110') | strcmp(summary_acquisition(i).animalID, 'SA150')
+        summary_acquisition(i).patency = false;
+    else
+        summary_acquisition(i).patency = true;
+    end
 end
 % cd('C:\Users\KeChen\MIT Dropbox\Ke Chen\Wang Lab\Manuscripts\DA_Cocaine_Fentanyl\Figures\Figure1\Data')
 cd('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/')
@@ -25,6 +31,7 @@ baf = behavior_analysis_func;
 % load('C:\Users\KeChen\MIT Dropbox\Ke Chen\Wang Lab\Manuscripts\DA_Cocaine_Fentanyl\Figures\Figure1\Data\Cocaine_acquisition_summary.mat')
 cd('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/')
 load('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/Cocaine_acquisition_summary.mat')
+summary_acquisition = summary_acquisition([summary_acquisition.patency]);
 
 data_plot = [];
 data_plot.FR = summary_acquisition(1).data.FR;
@@ -43,6 +50,7 @@ figure
 baf.FR_plot(summary_acquisition(1).data, 1500)
 baf.line_plot_MA_avg(data_plot.activeLever', data_plot.inactiveLever')
 set(gcf,'position',[100,100,340,340])
+ylim([0, 2000])
 saveas(gcf, 'Cocaine_Acquisition_LeverPress.pdf');
 % plot the infusion counts
 figure;
