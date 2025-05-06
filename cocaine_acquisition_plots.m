@@ -49,7 +49,7 @@ end
 figure
 baf.FR_plot(summary_acquisition(1).data, 1500)
 baf.line_plot_MA_avg(data_plot.activeLever', data_plot.inactiveLever')
-set(gcf,'position',[100,100,340,340])
+set(gcf,'position',[100,100,250,250])
 ylim([0, 2000])
 saveas(gcf, 'Cocaine_Acquisition_LeverPress.pdf');
 % plot the infusion counts
@@ -57,5 +57,5 @@ figure;
 baf.FR_plot(summary_acquisition(1).data, 100)
 ylim([0, 140])
 baf.line_plot_errorbar(data_plot.infusion','k', 'Infusion #')
-set(gcf,'position',[500,100,340,340])
+set(gcf,'position',[500,100,250,250])
 saveas(gcf, 'Cocaine_Acquisition_Infusion.pdf');
