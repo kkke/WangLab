@@ -683,13 +683,13 @@ classdef fb_extract_doric
         end
         function groupplot_psth_avg(obj, time_avg, psth_avg)
             figure;
-            subplot(2, 1, 1)
+            subplot(2, 1, 2)
             x = mean(time_avg, 2, 'omitnan');
             y = mean(psth_avg, 2, 'omitnan');
             e = std(psth_avg,1, 2, 'omitmissing')/sqrt(size(psth_avg, 2));
             boundedline(x, y, e, '-k');
-            xlabel('Time (s)')
-            ylabel('Z \Delta F/F')
+            xlabel('Time (s)','FontName', 'Arial')
+            ylabel('Z-Score','FontName', 'Arial')
             xlim([min(mean(time_avg, 2, 'omitnan')), max(mean(time_avg, 2, 'omitnan'))])
             xlim([-10, 50])
             hold on
@@ -699,7 +699,7 @@ classdef fb_extract_doric
             plot([40.00, 40.00], [-1, 1], '--')
             box off
             set(gca,'TickDir','out')
-            set(gca,'fontsize',12)
+            set(gca,'fontsize',12, 'FontName', 'Arial')
             set(gca,'TickLengt', [0.015 0.015]);
             set(gca, 'LineWidth',1)
             set(gcf,'position',[100,100,300,400])
@@ -707,14 +707,14 @@ classdef fb_extract_doric
             psth_avg(:, any(isnan(psth_avg), 1)) = [];
             time_avg(:, any(isnan(time_avg), 1)) = [];
 
-            subplot(2, 1, 2)
+            subplot(2, 1, 1)
             imagesc(mean(time_avg, 2), [], psth_avg')
             % colorbar
             xlabel('Time (s)')
             xlim([-10, 50])
             ylabel('Trials')
             set(gca,'TickDir','out')
-            set(gca,'fontsize',12)
+            set(gca,'fontsize',12, 'FontName', 'Arial')
             set(gca,'TickLengt', [0.015 0.015]);
             set(gca, 'LineWidth',1)
             set(gcf,'position',[100,100,900,400])
