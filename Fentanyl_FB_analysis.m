@@ -43,6 +43,7 @@ cd('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/F
 save('Fentanyl_FB_NAc_summary.mat', 'summary_FB_NAc_all', '-v7.3')
 save('Fentanyl_FB_DS_summary.mat', 'summary_FB_DS_all', '-v7.3')
 %% Step 2: analyze taking or baseline phases
+clear
 load('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure3/Fentanyl_FB_NAc_summary.mat')
 baseline_data = [];
 for i = 1:length(summary_FB_NAc_all)
@@ -108,10 +109,10 @@ data_to_plot = baseline_data(index_last_taking);
 population_psth_avg = psth_data(:, index_last_taking);
 
 %% add behavioral data
-load('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/Fentanyl_testing_summary.mat')
-
+load('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/Fentanyl_testing_summary_behavior.mat')
+cd('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure3')
 % SA96, SA151 lost patency, tested before perfusion
-remove_mask = arrayfun(@(x) strcmp(x.animalID, 'sa96')|strcmp(x.animalID, 'sa110')|strcmp(x.animalID, 'SA150'), summary_testing);
+remove_mask = arrayfun(@(x) strcmp(x.animalID, 'sa96')|strcmp(x.animalID, 'SA151'), summary_testing);
 behavior_testing = summary_testing(~remove_mask);
 for i = 1:length(data_to_plot)
     data_to_plot(i).behavior = behavior_testing(i);
@@ -140,11 +141,11 @@ for i = 1:length(data_to_plot)
     data_to_plot(i).behavior.back_cue = behavior_testing(i).data{index_behavior, "Resp-Cue-B"};
 
 end
-save('Cocaine_FB_taking_plot.mat', 'data_to_plot', 'population_psth_avg', 'psth_time')
+save('Fentanyl_FB_taking_plot.mat', 'data_to_plot', 'population_psth_avg', 'psth_time')
 %% plot the population psth
 clearvars -except data_to_plot population_psth_avg psth_time
-load('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/data_plot_behavior_testing.mat')
-load('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure3/Cocaine_FB_taking_plot.mat')
+load('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/Fentanyl_testing_summary_behavior.mat')
+load('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure3/Fentanyl_FB_taking_plot.mat')
 fb = fb_extract_doric;
 fb.groupplot_psth_avg(psth_time, population_psth_avg);
 set(gcf,'position',[100,100,340,340])
@@ -212,6 +213,8 @@ for i = 1:length(baseline_data)
     evoked_resp     = mean(sustained_value, 1) -  mean(basline_value);
     fano_value(i) = var(evoked_resp)/mean(evoked_resp);
 end
+
+fano_value = abs(fano_value);
 figure;
 mdl = fb.correlaiton_analysis_cluster(fano_value, trial_counts, clusterID);
 xlim([0, 10])
@@ -233,26 +236,21 @@ for i = 1:length(data_bar)
     sem_value = std(data_bar{i})./sqrt(length(data_bar{i}));
     b = bar(i, mean_value);
     b.FaceColor = 'flat';
-    b.CData(1,:) = colors(i, :);
+    switch i
+        case 1
+            b.CData(1,:) = colors(2, :);
+        case 2
+            b.CData(1,:) = colors(3, :);
+    end
+    b.FaceAlpha = 0.4;
     hold on
     errorbar(i, mean_value, sem_value,'k.', 'LineWidth', 1, 'CapSize',10)
 end
-for i = 1:4
-    switch i
-        case 1
 
-            scatter(i + 0.3* (rand(size(fano_value(find(clusterID == i))))-0.5), fano_value(find(clusterID == i)), 'k', 'MarkerFaceColor',colors(i,:))
-        case 2
-            scatter(i + 0.3* (rand(size(fano_value(find(clusterID == i))))-0.5), fano_value(find(clusterID == i)), 'k', 'MarkerFaceColor',colors(i,:))
-        case 3
-            scatter(1 + 0.3* (rand(size(fano_value(find(clusterID == i))))-0.5), fano_value(find(clusterID == i)), 'k', 'MarkerFaceColor',colors(i,:))
-        case 4
-            scatter(2 + 0.3* (rand(size(fano_value(find(clusterID == i))))-0.5), fano_value(find(clusterID == i)), 'k', 'MarkerFaceColor',colors(i,:))
+scatter(1 + 0.3* (rand(size(fano_value(high_taker)))-0.5), fano_value(high_taker), 'MarkerEdgeColor','none', 'MarkerFaceColor',colors(2,:))
+scatter(2 + 0.3* (rand(size(fano_value(low_taker)))-0.5), fano_value(low_taker), 'MarkerEdgeColor','none', 'MarkerFaceColor',colors(3,:))
 
-    end
-end
-xlabel('Cluster #');
-ylabel('Infusion #');
+xlabel('Drug Taking');
 box off
 set(gca,'TickDir','out')
 set(gca,'fontsize',12)
@@ -260,14 +258,16 @@ set(gca,'TickLengt', [0.015 0.015]);
 set(gca, 'LineWidth',1)
 set(gcf,'position',[100,100,200,340])
 set(gca,'XTick',[1, 2, 3, 4])
-ylabel('Fano Factor')
+xticks([1, 2])
+xticklabels({'High', 'Low'})
+ylabel('Fano Factor of Sustained DA')
 ylim([0, 5])
 
 % Example cell array with two groups of d
 ranksum(data_bar{1}, data_bar{2})
 %% plot example
 figure;
-imagesc(psth_time',[], data_to_plot(19).psth_infusion')
+imagesc(psth_time',[], data_to_plot(6).psth_infusion')
 colormap(jet)
 xlabel('Time')
 ylabel('Trials')
@@ -280,7 +280,7 @@ set(gcf,'position',[100,100,340,170])
 clim([-2, 5])
 
 figure
-imagesc(psth_time',[], data_to_plot(20).psth_infusion')
+imagesc(psth_time',[], data_to_plot(3).psth_infusion')
 colormap(jet)
 xlabel('Time')
 ylabel('Trials')
@@ -327,15 +327,16 @@ for k = 1:length(p_value_array)
 end
 
 bar_scatter_cluster(resp_ratio(:, 1), high_taker, low_taker, clusterID)
-ylim([0.1, 1.1])
+ylim([0.1, 1])
+set(gcf,'position',[100,100,200,340])
 [h,p] = ranksum(resp_ratio(high_taker), resp_ratio(low_taker))
 ylabel('Proportion of Trials with Significant Response')
 %%
 figure;
 mdl = fb.correlaiton_analysis_cluster(resp_ratio(:,1), trial_counts, clusterID);
-ylim([30,100])
-xlim([0.2, 1.2])
-ylabel('Infusion Counts')
+ylim([0,150])
+xlim([0.1, 1])
+ylabel('Infusions')
 xlabel('Proportion of Trials (p < 0.05)')
 set(gcf,'position',[100,100,340,340])
 
