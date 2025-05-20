@@ -1,8 +1,8 @@
 % In your summary folder, summarize all data into a single file
-clear; close all;clc
+clear; clc
 % go the data folder
 % cd('C:\Users\KeChen\MIT Dropbox\Ke Chen\Wang Lab\Manuscripts\DA_Cocaine_Fentanyl\Figures\Figure1\Data\Cocaine_Acquisition')
-cd('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/Cocaine_Acquisition')
+cd('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/raw_data/Cocaine_Acquisition')
 files = dir('*Acquisition_data.mat');
 % contruct a summary dictionary containing all data 
 summary_acquisition = [];
@@ -22,15 +22,16 @@ for i = 1:length(files)
     end
 end
 % cd('C:\Users\KeChen\MIT Dropbox\Ke Chen\Wang Lab\Manuscripts\DA_Cocaine_Fentanyl\Figures\Figure1\Data')
-cd('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/')
+cd('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data')
 save('Cocaine_acquisition_summary.mat', 'summary_acquisition')
 %% plot the lever press and infusion counts
-clear; close all; clc;
+% clear; close all; clc;
+cd('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1')
 baf = behavior_analysis_func;
 % cd('C:\Users\KeChen\MIT Dropbox\Ke Chen\Wang Lab\Manuscripts\DA_Cocaine_Fentanyl\Figures\Figure1\Data\')
 % load('C:\Users\KeChen\MIT Dropbox\Ke Chen\Wang Lab\Manuscripts\DA_Cocaine_Fentanyl\Figures\Figure1\Data\Cocaine_acquisition_summary.mat')
-cd('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/')
-load('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/Cocaine_acquisition_summary.mat')
+% cd('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/')
+% load('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/Cocaine_acquisition_summary.mat')
 summary_acquisition = summary_acquisition([summary_acquisition.patency]);
 
 data_plot = [];
@@ -47,15 +48,18 @@ for i = 1:length(summary_acquisition)
 end
 % plot the active and inactive lever press
 figure
+subplot(1, 2, 1)
 baf.FR_plot(summary_acquisition(1).data, 1500)
 baf.line_plot_MA_avg(data_plot.activeLever', data_plot.inactiveLever')
-set(gcf,'position',[100,100,250,250])
+xlabel('Training Sessions')
+set(gcf,'position',[100,100,500,250])
 ylim([0, 2000])
-saveas(gcf, 'Cocaine_Acquisition_LeverPress.pdf');
+% saveas(gcf, 'Cocaine_Acquisition_LeverPress.pdf');
 % plot the infusion counts
-figure;
+subplot(1,2, 2)
 baf.FR_plot(summary_acquisition(1).data, 100)
 ylim([0, 140])
-baf.line_plot_errorbar(data_plot.infusion','k', 'Infusion #')
-set(gcf,'position',[500,100,250,250])
-saveas(gcf, 'Cocaine_Acquisition_Infusion.pdf');
+baf.line_plot_errorbar(data_plot.infusion','k', 'Infusions')
+xlabel('Training Sessions')
+set(gcf,'position',[500,100,500,250])
+% saveas(gcf, 'Cocaine_Acquisition_Infusion.pdf');
