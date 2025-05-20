@@ -86,7 +86,7 @@ classdef behavior_analysis_func
             text(fr2(1), high + 40, 'FR2')
             fr4 = find(summarydata.FR ==4);
             rectangle('position', [fr4(1), 1, fr4(end)-fr4(1), high], 'FaceColor', [35,31,32]/255, 'FaceAlpha', 0.30, 'EdgeColor', 'none')
-            text(fr4(1), high + 40, 'FR4')
+            text(fr4(1)+1, high + 40, 'FR4')
         end
 
 
@@ -111,13 +111,13 @@ classdef behavior_analysis_func
             set(h2, 'LineWidth', 1)
             set(h2, 'MarkerFaceColor', 'w')
             legend([h1, h2], {legend1, legend2})
-            ylabel('Lever Press #')
+            ylabel('Lever Presses')
             xlim([0,20])
             % xticks([0:13])
             % xticklabels({'','1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', ''})
             % xlabel('Signal to Noise Ratio (dB)')
             % xlabel('Signal to Noise Ratio (dB)')
-            xlabel('Session #')
+            xlabel('Training Sessions')
             box off
             set(gca,'TickDir','out')
             set(gca,'fontsize',12)
@@ -140,7 +140,7 @@ classdef behavior_analysis_func
             h2 = plot(data2, '-o', 'color', colors(6,:), 'LineWidth', 1);
             set(h2, 'MarkerFaceColor', 'w')
             legend([h1(1), h2(1)], {legend1, legend2})
-            ylabel('Lever Press #')
+            ylabel('Lever Presses')
             xlim([0,20])
             % xticks([0:13])
             % xticklabels({'','1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', ''})
@@ -180,7 +180,7 @@ classdef behavior_analysis_func
             figure;
             plot(pr, 'k', 'LineWidth',1)
             ylim([0, 400])
-            xlabel("Infusion #")
+            xlabel("Infusions")
             ylabel('Break Point (Lever Press #)')
             hold on
             scatter(data.Reward,  data.PR, 'MarkerFaceColor', 'w', 'LineWidth',1)
