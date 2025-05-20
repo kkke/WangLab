@@ -143,8 +143,8 @@ end
 save('Cocaine_FB_Punishment_plot.mat', 'data_to_plot', 'population_psth_avg', 'psth_time')
 %% plot the population psth
 clear;clc;close all
-load('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/data_plot_behavior_testing.mat')
-load('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure3/Cocaine_FB_Punishment_plot.mat')
+load('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/Cocaine_testing_summary.mat')
+load('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure4/Cocaine_FB_Punishment_plot.mat')
 fb = fb_extract_doric;
 fb.groupplot_psth_avg(psth_time, population_psth_avg);
 set(gcf,'position',[100,100,340,340])
@@ -221,7 +221,12 @@ for i = 1:length(baseline_data)
     basline_value = baseline_data(i).psth_infusion(baseline_index, :);
     sustained_value = baseline_data(i).psth_infusion(sustained_index, :);
     evoked_resp     = mean(sustained_value, 1) -  mean(basline_value);
+    if length(evoked_resp) ==1
+        fano_value(i) = NaN;
+    else
     fano_value(i) = var(evoked_resp)/mean(evoked_resp);
+
+    end
 end
 figure;
 mdl = fb.correlaiton_analysis_cluster(fano_value, trial_counts, clusterID);
@@ -241,29 +246,25 @@ colors = cbrewer2('div', 'RdYlBu', 4);
 data_bar = {fano_value(high_taker),fano_value(low_taker) };
 for i = 1:length(data_bar)
     mean_value = mean(data_bar{i}, 'omitmissing');
-    sem_value = std(data_bar{i})./sqrt(length(data_bar{i}));
+    sem_value = std(data_bar{i}, 'omitmissing')./sqrt(length(data_bar{i}));
     b = bar(i, mean_value);
     b.FaceColor = 'flat';
-    b.CData(1,:) = colors(i, :);
+    switch i
+        case 1
+            b.CData(1,:) = colors(1, :);
+
+        case 2
+            b.CData(1,:) = colors(4, :);
+    end
+    b.FaceAlpha = 0.4;
     hold on
     errorbar(i, mean_value, sem_value,'k.', 'LineWidth', 1, 'CapSize',10)
 end
-for i = 1:4
-    switch i
-        case 1
 
-            scatter(i + 0.3* (rand(size(fano_value(find(clusterID == i))))-0.5), fano_value(find(clusterID == i)), 'k', 'MarkerFaceColor',colors(i,:))
-        case 2
-            scatter(1 + 0.3* (rand(size(fano_value(find(clusterID == i))))-0.5), fano_value(find(clusterID == i)), 'k', 'MarkerFaceColor',colors(i,:))
-        case 3
-            scatter(2 + 0.3* (rand(size(fano_value(find(clusterID == i))))-0.5), fano_value(find(clusterID == i)), 'k', 'MarkerFaceColor',colors(i,:))
-        case 4
-            scatter(2 + 0.3* (rand(size(fano_value(find(clusterID == i))))-0.5), fano_value(find(clusterID == i)), 'k', 'MarkerFaceColor',colors(i,:))
+scatter(1 + 0.3* (rand(size(fano_value(high_taker)))-0.5), fano_value(high_taker), 'MarkerEdgeColor','none', 'MarkerFaceColor',colors(1,:))
+scatter(2 + 0.3* (rand(size(fano_value(low_taker)))-0.5), fano_value(low_taker), 'MarkerEdgeColor','none', 'MarkerFaceColor',colors(4,:))
 
-    end
-end
-xlabel('Cluster #');
-ylabel('Infusion #');
+xlabel('Resistance');
 box off
 set(gca,'TickDir','out')
 set(gca,'fontsize',12)
@@ -271,8 +272,10 @@ set(gca,'TickLengt', [0.015 0.015]);
 set(gca, 'LineWidth',1)
 set(gcf,'position',[100,100,200,340])
 set(gca,'XTick',[1, 2, 3, 4])
-ylabel('Fano Factor')
-ylim([0, 5])
+xticks([1, 2])
+xticklabels({'High', 'Low'})
+ylabel('Fano Factor of Sustained DA')
+ylim([0, 3])
 
 % Example cell array with two groups of d
 [h,p ]= ttest2(data_bar{1}, data_bar{2})
@@ -337,8 +340,9 @@ for k = 1:length(p_value_array)
     end
 end
 
-bar_scatter_cluster(resp_ratio(:, 1), high_taker, low_taker, clusterID)
-ylim([0.1, 1.1])
+bar_scatter_cluster_resistance(resp_ratio(:, 1), high_taker, low_taker, clusterID)
+set(gcf,'position',[100,100,200,340])
+ylim([0.4, 1.1])
 [h,p] = ranksum(resp_ratio(high_taker), resp_ratio(low_taker))
 ylabel('Proportion of Trials with Significant Response')
 %%
@@ -346,7 +350,7 @@ figure;
 mdl = fb.correlaiton_analysis_cluster(resp_ratio(:,1), trial_counts, clusterID);
 ylim([0,150])
 xlim([0.4, 1.2])
-ylabel('Infusion Counts')
+ylabel('Infusions with Punishment')
 xlabel('Proportion of Trials (p < 0.05)')
 set(gcf,'position',[100,100,340,340])
 
