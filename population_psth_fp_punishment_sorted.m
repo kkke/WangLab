@@ -24,16 +24,16 @@ value_sustained = mean(norm_population_psth_avg(sustained_index, :), 1);
 value_phasic    = mean(norm_population_psth_avg(phasic_index, :), 1);
 mdl = fb.correlaiton_analysis_cluster(value_sustained, trial_counts, clusterID);
 xlim([0, 4])
-xlabel('Average Sustained DA')
+xlabel('Sustained DA (Z-Score 0-19.5 s)')
 ylim([0, 150])
-ylabel('Infusion Counts')
+ylabel('Infusions')
 set(gcf,'position',[100,100,340,340])
 %% correlation analysis- phasic 
 mdl = fb.correlaiton_analysis_cluster(value_phasic, trial_counts, clusterID);
-xlim([0, 2])
-xlabel('Average Phasic DA')
+xlim([-1, 3])
+xlabel('Phasic DA (Z-Score 0-1 s)')
 ylim([0, 150])
-ylabel('Infusion Counts')
+ylabel('Infusions')
 set(gcf,'position',[100,100,340,340])
 %% get a bar graphing showing high drug taker vs low drug taker
 high_taker = find(clusterID == 1 | clusterID ==2);
@@ -47,7 +47,7 @@ hold on
 e2 = std(norm_population_psth_avg(:, low_taker),1, 2, 'omitmissing')/sqrt(size(norm_population_psth_avg(:, low_taker), 2));
 h2 = boundedline(psth_time, mean(norm_population_psth_avg(:, low_taker),2), e2, 'cmap', colors(4,:));
 xlabel('Time (s)')
-ylabel('Z \Delta F/F')
+ylabel('Z-Score')
 xlim([-10, 50])
 hold on
 ylim([-0.5, 4])
@@ -71,25 +71,22 @@ for i = 1:length(data_bar)
     sem_value = std(data_bar{i})./sqrt(length(data_bar{i}));
     b = bar(i, mean_value);
     b.FaceColor = 'flat';
-    b.CData(1,:) = colors(i, :);
+    switch i
+        case 1
+            b.CData(1,:) = colors(1, :);
+        case 2
+            b.CData(1,:) = colors(4, :);
+    end
+    b.FaceAlpha = 0.4;
     hold on
     errorbar(i, mean_value, sem_value,'k.', 'LineWidth', 1, 'CapSize',10)
 end
-for i = 1:4
-    switch i
-        case 1
-            scatter(i + 0.3* (rand(size(value_sustained(find(clusterID == i))))-0.5), value_sustained(find(clusterID == i)), 'k', 'MarkerFaceColor',colors(i,:))
-        case 2
-            scatter(1 + 0.3* (rand(size(value_sustained(find(clusterID == i))))-0.5), value_sustained(find(clusterID == i)), 'k', 'MarkerFaceColor',colors(i,:))
-        case 3
-            scatter(2 + 0.3* (rand(size(value_sustained(find(clusterID == i))))-0.5), value_sustained(find(clusterID == i)), 'k', 'MarkerFaceColor',colors(i,:))
-        case 4
-            scatter(2 + 0.3* (rand(size(value_sustained(find(clusterID == i))))-0.5), value_sustained(find(clusterID == i)), 'k', 'MarkerFaceColor',colors(i,:))
 
-    end
-end
-xlabel('Cluster #');
-ylabel('Infusion #');
+scatter(1 + 0.3* (rand(size(value_sustained(high_taker)))-0.5), value_sustained(high_taker), 'MarkerEdgeColor','none', 'MarkerFaceColor',colors(1,:))
+scatter(2 + 0.3* (rand(size(value_sustained(low_taker)))-0.5), value_sustained(low_taker), 'MarkerEdgeColor','none', 'MarkerFaceColor',colors(4,:))
+
+
+xlabel('Resistance');
 box off
 set(gca,'TickDir','out')
 set(gca,'fontsize',12)
@@ -97,7 +94,82 @@ set(gca,'TickLengt', [0.015 0.015]);
 set(gca, 'LineWidth',1)
 set(gcf,'position',[100,100,200,340])
 set(gca,'XTick',[1, 2, 3, 4])
-ylabel('Sustained DA')
+xticks([1, 2])
+xticklabels({'High', 'Low'})
+ylabel('Sustained DA (Z-Score 0-19.5 s)')
 ylim([0, 4])
 
 [h,p] = ttest2(data_bar{1}, data_bar{2})
+%% phasic 
+baf = behavior_analysis_func;
+figure
+colors = cbrewer2('div', 'RdYlBu', 4);
+data_bar = {value_phasic(high_taker),value_phasic(low_taker) };
+for i = 1:length(data_bar)
+    mean_value = mean(data_bar{i});
+    sem_value = std(data_bar{i})./sqrt(length(data_bar{i}));
+    b = bar(i, mean_value);
+    b.FaceColor = 'flat';
+    switch i
+        case 1
+            b.CData(1,:) = colors(1, :);
+        case 2
+            b.CData(1,:) = colors(4, :);
+    end
+    b.FaceAlpha = 0.4;
+    hold on
+    errorbar(i, mean_value, sem_value,'k.', 'LineWidth', 1, 'CapSize',10)
+end
+
+scatter(1 + 0.3* (rand(size(value_phasic(high_taker)))-0.5), value_phasic(high_taker), 'MarkerEdgeColor','none', 'MarkerFaceColor',colors(1,:))
+scatter(2 + 0.3* (rand(size(value_phasic(low_taker)))-0.5), value_phasic(low_taker), 'MarkerEdgeColor','none', 'MarkerFaceColor',colors(4,:))
+
+
+xlabel('Resistance');
+box off
+set(gca,'TickDir','out')
+set(gca,'fontsize',12)
+set(gca,'TickLengt', [0.015 0.015]);
+set(gca, 'LineWidth',1)
+set(gcf,'position',[100,100,200,340])
+set(gca,'XTick',[1, 2, 3, 4])
+xticks([1, 2])
+xticklabels({'High', 'Low'})
+ylabel('Phasic DA (Z-Score 0-1 s)')
+ylim([-1, 3])
+[h,p] = ttest2(data_bar{1}, data_bar{2})
+%% 
+phasic_negative = find(value_phasic < 0);
+phasic_positive = find(value_phasic > 0);
+
+negative_low = intersect(low_taker, phasic_negative);
+positive_low = intersect(low_taker, phasic_positive);
+figure;
+colors = cbrewer2('div', 'RdYlBu', 4);
+e1 = std(norm_population_psth_avg(:, negative_low),1, 2, 'omitmissing')/sqrt(size(norm_population_psth_avg(:, negative_low), 2));
+h1 = boundedline(psth_time, mean(norm_population_psth_avg(:, negative_low),2), e1, 'cmap', colors(3,:));
+hold on
+e2 = std(norm_population_psth_avg(:, positive_low),1, 2, 'omitmissing')/sqrt(size(norm_population_psth_avg(:, positive_low), 2));
+h2 = boundedline(psth_time, mean(norm_population_psth_avg(:, positive_low),2), e2, 'cmap', colors(4,:));
+
+e3 = std(norm_population_psth_avg(:, high_taker),1, 2, 'omitmissing')/sqrt(size(norm_population_psth_avg(:, high_taker), 2));
+h3 = boundedline(psth_time, mean(norm_population_psth_avg(:, high_taker),2), e2, 'cmap', colors(1,:));
+xlabel('Time (s)')
+ylabel('Z-Score')
+xlim([-2, 5])
+hold on
+ylim([-2, 2])
+plot([0, 0], [-1, 1], 'r--')
+plot([19.50, 19.50], [-1, 1], '--')
+plot([40.00, 40.00], [-1, 1], '--')
+box off
+set(gca,'TickDir','out')
+set(gca,'fontsize',12)
+set(gca,'TickLengt', [0.015 0.015]);
+set(gca, 'LineWidth',1)
+set(gcf,'position',[100,100,340,340])
+legend([h1, h2, h3], {'Low Resistance N', 'Low Resistance P', 'High Resistance'})
+
+
+
+
