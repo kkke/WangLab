@@ -1,8 +1,8 @@
 % In your summary folder, summarize all data into a single file
-clear; close all;clc
+clear; clc
 % go the data folder
 % cd('C:\Users\KeChen\MIT Dropbox\Ke Chen\Wang Lab\Manuscripts\DA_Cocaine_Fentanyl\Figures\Figure1\Data\Fentanyl_Acquisition')
-cd('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/Fentanyl_Acquisition')
+cd('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/raw_Data/Fentanyl_Acquisition')
 files = dir('*Acquisition_data.mat');
 % contruct a summary dictionary containing all data 
 summary_acquisition = [];
@@ -14,15 +14,24 @@ for i = 1:length(files)
     summary_acquisition(i).FR1 = find(summarydata.FR == 1);
     summary_acquisition(i).FR2 = find(summarydata.FR == 2);
     summary_acquisition(i).FR4 = find(summarydata.FR == 4);
+    % add information about patency: SA96, SA151 lost patency, tested before perfusion
+    if strcmp(summary_acquisition(i).animalID, 'SA96')| strcmp(summary_acquisition(i).animalID, 'SA151')
+        summary_acquisition(i).patency = false;
+    else
+        summary_acquisition(i).patency = true;
+    end
 end
 % cd('C:\Users\KeChen\MIT Dropbox\Ke Chen\Wang Lab\Manuscripts\DA_Cocaine_Fentanyl\Figures\Figure1\Data')
 cd('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data')
 save('Fentanyl_acquisition_summary.mat', 'summary_acquisition')
 %% plot the lever press and infusion counts
-clear; close all; clc;
+% clear; close all; clc;
+cd('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1')
 baf = behavior_analysis_func;
 % load('C:\Users\KeChen\MIT Dropbox\Ke Chen\Wang Lab\Manuscripts\DA_Cocaine_Fentanyl\Figures\Figure1\Data\Fentanyl_acquisition_summary.mat')
-load('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/Fentanyl_acquisition_summary.mat')
+% load('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/Fentanyl_acquisition_summary.mat')
+summary_acquisition = summary_acquisition([summary_acquisition.patency]);
+
 data_plot = [];
 data_plot.FR = summary_acquisition(1).data.FR;
 % only plot the 9 sessions of FR1, 2 sessions of FR2 and 10 sessions of FR4
@@ -58,15 +67,19 @@ for i = 1:length(summary_acquisition)
 end
 % plot the active and inactive lever press
 figure
+subplot(1, 2, 1)
 baf.FR_plot(summary_acquisition(1).data, 900)
 baf.line_plot_MA_avg(data_plot.activeLever', data_plot.inactiveLever')
 ylim([0,1200])
-set(gcf,'position',[100,100,340,340])
-saveas(gcf, 'Fentanyl_Acquisition_LeverPress.pdf');
+xlim([0, 22])
+set(gcf,'position',[100,100,500,250])
+% saveas(gcf, 'Fentanyl_Acquisition_LeverPress.pdf');
 % plot the infusion counts
-figure;
+subplot(1, 2, 2)
 baf.FR_plot(summary_acquisition(1).data, 100)
 ylim([0, 140])
-baf.line_plot_errorbar(data_plot.infusion','k', 'Infusion #')
-set(gcf,'position',[500,100,340,340])
-saveas(gcf, 'Fentanyl_Acquisition_Infusion.pdf');
+baf.line_plot_errorbar(data_plot.infusion','k', 'Infusions')
+xlim([0, 22])
+xlabel('Training Sessions')
+set(gcf,'position',[500,100,500,250])
+% saveas(gcf, 'Fentanyl_Acquisition_Infusion.pdf');
