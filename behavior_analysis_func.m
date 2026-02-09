@@ -316,51 +316,51 @@ classdef behavior_analysis_func
             set(gcf,'position',[100,100,800,400])
         end
         
-        function raster_plot(obj,timestamps)
+        function perievent = raster_plot(obj,timestamps)
             colors = cbrewer2('div', 'RdYlBu', 6);
             cue = timestamps.cue;
-            front_lever = timestamps.front_lever;
-            back_lever = timestamps.back_lever; 
+            active_lever = timestamps.active_lever;
+            inactive_lever = timestamps.inactive_lever; 
             reward     = timestamps.reward;
             % get the peri-event of the lever press and reward
             for i = 1:length(cue)-1
                 time_range = [cue(i), cue(i+1)];
-                perievent_back(i).times   = back_lever(find(back_lever > time_range(1) & back_lever < time_range(2))) -   cue(i);
-                perievent_front(i).times  = front_lever(find(front_lever > time_range(1) & front_lever < time_range(2)))- cue(i);
-                perievent_reward(i).times = reward(find(reward > time_range(1) & reward < time_range(2)))- cue(i);
+                perievent(i).activeLever_times   = active_lever(find(active_lever > time_range(1) & active_lever < time_range(2))) -   cue(i);
+                perievent(i).inactiveLever_times  = inactive_lever(find(inactive_lever > time_range(1) & inactive_lever < time_range(2)))- cue(i);
+                perievent(i).reward_times = reward(find(reward > time_range(1) & reward < time_range(2)))- cue(i);
+                if ~isempty(perievent(i).activeLever_times)
+                    perievent(i).reaction_time = perievent(i).activeLever_times(1);
+                    perievent(i).ipi = diff(perievent(i).activeLever_times);
+                else
+                    perievent(i).reaction_time = NaN;
+                    perievent(i).ipi = NaN;
+
+                end
             end
 
             %plot the peri-event raster of lever pressing and reward
-            figure;
-            hold on
-            for i = 1:length(cue)-1
-                if ~isempty(perievent_front(i).times)
-                    h1 = plot([perievent_front(i).times; perievent_front(i).times], [i, i+1], 'color',colors(1,:));
-                end
-            end
-
-
-            hold on
-            for i = 1:length(cue)-1
-                if ~isempty(perievent_back(i).times)
-                    h3 = plot([perievent_back(i).times; perievent_back(i).times], [i, i+1], 'color', colors(6,:));
-                end
-            end
-
-            hold on
-            for i = 1:length(cue)-1
-                h2 = plot([perievent_reward(i).times; perievent_reward(i).times], [i, i+1], 'k');
-            end
-
-            xlabel('Time (s)')
-            ylabel('Trial #')
-            xlim([-10,300])
-            box off
-            set(gca,'TickDir','out')
-            set(gca,'fontsize',12)
-            set(gca,'TickLengt', [0.015 0.015]);
-            set(gca, 'LineWidth',1)
-            set(gcf,'position',[100,100,800,400])
+            % figure;
+            % hold on
+            % for i = 1:length(cue)-1
+            %     if ~isempty(perievent(i).activeLever_times)
+            %         h1 = plot([perievent(i).activeLever_times; perievent(i).activeLever_times], [i, i+1], 'color',colors(1,:));
+            %     end
+            %     if ~isempty(perievent(i).inactiveLever_times)
+            %         h3 = plot([perievent(i).inactiveLever_times; perievent(i).inactiveLever_times], [i, i+1], 'color', colors(6,:));
+            %     end
+            %     if ~isempty(perievent(i).reward_times)
+            %     h2 = plot([perievent(i).reward_times; perievent(i).reward_times], [i, i+1], 'k');
+            %     end
+            % end
+            % xlabel('Time (s)')
+            % ylabel('Trial #')
+            % xlim([-10,300])
+            % box off
+            % set(gca,'TickDir','out')
+            % set(gca,'fontsize',12)
+            % set(gca,'TickLengt', [0.015 0.015]);
+            % set(gca, 'LineWidth',1)
+            % set(gcf,'position',[100,100,800,400])
         end
 
 
