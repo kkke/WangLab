@@ -7,6 +7,14 @@ taking = 1:3;
 punishment = 4:6;
 data_plot.animal_avg_taking = mean(data_plot.infusion(taking, :));
 data_plot.animal_avg_punishment = mean(data_plot.infusion(punishment, :));
+data_plot.activeLever_taking = mean(data_plot.activeLever(taking, :));
+data_plot.activeLever_punishment = mean(data_plot.activeLever(punishment, :));
+
+data_plot.activeLever_perInfusion = data_plot.activeLever./data_plot.infusion;
+data_plot.activeLever_perInfusion(isinf(data_plot.activeLever_perInfusion)) = NaN;
+data_plot.activeLever_Cue_taking = mean(data_plot.activeLever_Cue(taking, :));
+data_plot.activeLever_Cue_punishment = mean(data_plot.activeLever_Cue(punishment, :));
+
 data_plot.n_animal_avg_taking   = data_plot.animal_avg_taking/mean(data_plot.animal_avg_taking);
 data_plot.n_animal_avg_punishment  = data_plot.animal_avg_punishment/mean(data_plot.animal_avg_punishment);
 data_plot.extinction_score      = data_plot.infusion(6,:)./data_plot.animal_avg_taking;
@@ -25,11 +33,117 @@ data_plot.high_resistance = high_resistance;
 data_plot.low_resistance = low_resistance;
 save('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/Cocaine_testing_summary_cluster.mat', ...
     'summary_testing', 'data_plot')
+
+figure;
+mysets = ["High Taker" "Low Taker" "High Resistance" "Low Resistance"];
+mylabels = [length(high_taker), length(low_taker), length(high_resistance), length(low_resistance),...
+    length(intersect(high_taker, low_taker)), length(intersect(high_taker, high_resistance)), length(intersect(high_taker, low_resistance)), ...
+    length(intersect(low_taker, high_resistance)), length(intersect(low_taker, low_resistance)), 0, 0, 0, 0,0];
+venn(4, 'sets', mysets, 'labels', mylabels )
+%%
+figure
+baf = behavior_analysis_func;
+subplot(1, 2, 1)
+active_levers = [data_plot.activeLever_taking', data_plot.activeLever_punishment'];
+plot(active_levers', '-o', 'Color', 0.8* [1, 1, 1], 'LineWidth', 1, 'MarkerFaceColor','w')
+hold on
+baf.line_plot_errorbar(active_levers, 'r', 'Active Lever Presses')
+xlim([0, 3])
+ylim([0, 1000])
+xticks([1, 2])
+xticklabels({'Baseline', 'Punishment'})
+xlabel('')
+box off
+set(gca,'TickDir','out')
+set(gca,'fontsize',12)
+set(gca,'TickLengt', [0.015 0.015]);
+set(gca, 'LineWidth',1)
+set(gcf, 'Color', 'white')
+
+subplot(1, 2, 2)
+infusions = [data_plot.animal_avg_taking', data_plot.animal_avg_punishment']
+plot(infusions', '-o', 'Color', 0.8* [1, 1, 1], 'LineWidth', 1, 'MarkerFaceColor','w')
+hold on
+baf.line_plot_errorbar(infusions, 'k', 'Infusions/3 hours')
+xlim([0, 3])
+ylim([0, 150])
+xticks([1, 2])
+xticklabels({'Baseline', 'Punishment'})
+xlabel('')
+box off
+set(gca,'TickDir','out')
+set(gca,'fontsize',12)
+set(gca,'TickLengt', [0.015 0.015]);
+set(gca, 'LineWidth',1)
+set(gcf,'position',[500,100,500,250])
+set(gcf, 'Color', 'white')
+
+%% reaction time
+for i = 1:length(summary_testing)
+    summary_testing(i).high_taker = NaN;
+    summary_testing(i).resistance = NaN;
+end
+
+[summary_testing(high_taker).high_taker] = deal(1);
+[summary_testing(low_taker).high_taker] = deal(0);
+[summary_testing(high_resistance).resistance] = deal(1);
+[summary_testing(low_resistance).resistance] = deal(0);
+
+% get the reward time for each trial
+for i = 1:length(data_plot.timestamps)
+    for j = 1:length(data_plot.timestamps(i).timestamps)
+        if isempty(data_plot.timestamps(i).timestamps(j).reward)
+            data_plot.timestamps(i).timestamps(j).reward_time = NaN;
+            data_plot.reward_time_avg(j, i) = NaN;
+
+        elseif length(data_plot.timestamps(i).timestamps(j).reward) == length(data_plot.timestamps(i).timestamps(j).cue)
+            data_plot.timestamps(i).timestamps(j).reward_time = data_plot.timestamps(i).timestamps(j).reward - data_plot.timestamps(i).timestamps(j).cue;
+        elseif length(data_plot.timestamps(i).timestamps(j).reward) < length(data_plot.timestamps(i).timestamps(j).cue)
+            data_plot.timestamps(i).timestamps(j).reward_time = data_plot.timestamps(i).timestamps(j).reward - data_plot.timestamps(i).timestamps(j).cue(1:end-1);
+        end
+        data_plot.reward_time_avg(j, i) = mean(data_plot.timestamps(i).timestamps(j).reward_time);
+    end
+end
+%% get the inter-infusion-interval
+% get the reward time for each trial
+for i = 1:length(data_plot.timestamps)
+    for j = 1:length(data_plot.timestamps(i).timestamps)
+        if isempty(data_plot.timestamps(i).timestamps(j).reward)||length(data_plot.timestamps(i).timestamps(j).reward)<2
+            data_plot.ifi(j, i) = NaN;
+        else
+           data_plot.ifi(j,i) = mean(diff(data_plot.timestamps(i).timestamps(j).reward));
+        end
+    end
+end
+
+%% get the active lever press timestamps
+baf = behavior_analysis_func;
+for i = 1:length(summary_testing)
+    training_protocol = split(summary_testing(i).data{1, 'training'}, " ");
+    switch training_protocol{1}
+        case 'Back'
+            active_lever = 'back_lever';
+            inactive_lever = 'front_lever';
+        case 'Front'
+            active_lever = 'front_lever';
+            inactive_lever = 'back_lever';
+    end
+    for j = 1:length(data_plot.timestamps(i).timestamps)
+    data_plot.timestamps(i).timestamps(j).active_lever = data_plot.timestamps(i).timestamps(j).(active_lever);
+    data_plot.timestamps(i).timestamps(j).inactive_lever = data_plot.timestamps(i).timestamps(j).(inactive_lever);
+    data_plot.timestamps(i).timestamps(j).perievent =  baf.raster_plot(data_plot.timestamps(i).timestamps(j));
+    data_plot.reaction_time_avg(j, i) = mean([data_plot.timestamps(i).timestamps(j).perievent.reaction_time]);
+    data_plot.ipi_avg(j,i) = mean([data_plot.timestamps(i).timestamps(j).perievent.ipi]);
+    end
+end
+
+%%
+data_plot.reward_time_avg_taking = mean(data_plot.reward_time_avg(taking, :));
+data_plot.ifi_taking             = mean(data_plot.ifi(taking,:));
+save('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/Cocaine_testing_summary_cluster.mat', ...
+    'summary_testing', 'data_plot')
 %% plot the individual differences
 drug_individual_plots(data_plot)
-
-% futile lever press
-% reaction time
 %% hierarchival 
 % data_for_cluster = [data_plot.n_animal_avg_taking;data_plot.n_animal_avg_punishment;data_plot.n_extinction_score]';
 % Z = linkage(data_for_cluster, 'ward', 'euclidean');
