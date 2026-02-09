@@ -1,7 +1,13 @@
 function bar_scatter_cluster_v2(fano_value, high_taker, low_taker)
 baf = behavior_analysis_func;
 colors = cbrewer2('div', 'RdYlBu', 4);
-data_bar = {fano_value(high_taker),fano_value(low_taker) };
+% remove nan from data
+data_01 = fano_value(high_taker);
+data_02 = fano_value(low_taker);
+
+data_bar = {data_01(find(~isnan(data_01))),data_02(find(~isnan(data_02)))};
+
+
 for i = 1:length(data_bar)
     mean_value = mean(data_bar{i});
     sem_value = std(data_bar{i})./sqrt(length(data_bar{i}));
@@ -21,9 +27,9 @@ for i = 1:2
     switch i
         case 1
 
-            scatter(i + 0.3* (rand(size(fano_value(high_taker)))-0.5), fano_value(high_taker), 'MarkerEdgeColor', 'none', 'MarkerFaceColor',colors(2,:))
+            scatter(i + 0.3* (rand(size(data_bar{i}))-0.5), data_bar{i}, 'MarkerEdgeColor', 'none', 'MarkerFaceColor',colors(2,:))
         case 2
-            scatter(i + 0.3* (rand(size(fano_value(low_taker)))-0.5), fano_value(low_taker), 'MarkerEdgeColor', 'none', 'MarkerFaceColor',colors(3,:))
+            scatter(i + 0.3* (rand(size(data_bar{i}))-0.5), data_bar{i}, 'MarkerEdgeColor', 'none', 'MarkerFaceColor',colors(3,:))
     end
 end
 xlabel('Drug Taking', 'FontSize', 14);
@@ -39,5 +45,8 @@ xticks([1 2]);
 xticklabels({'High', 'Low'});
 ylabel('Fano Factor')
 ylim([0, 5])
-
+display('t-test')
 [h,p] = ttest2(data_bar{1}, data_bar{2})
+
+display('ranksum test')
+ranksum(data_bar{1}, data_bar{2})
