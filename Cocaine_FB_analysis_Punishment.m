@@ -1,49 +1,49 @@
 %% Step 1: Summarize all data into a single file, alt
 % In your summary folder, summarize all data into a single file
-clear; close all;clc
-% go the data folder
-cd("/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure3/Cocaine_FB")
-files = dir('*FB_summary.mat');
-summary_FB_NAc_all = [];
-summary_FB_DS_all  = [];
-for j = 1:length(files)
-    load(files(j).name)
-    % find the autoshaping, PR, and shock session
-    % clean the data
-    % add raw_time to data
-    temp_var = summarydata;
-    for i = 1:numel(summarydata)
-        if ~isfield(summarydata(i), 'raw_time')
-            % Check if 'time' field exists before copying
-            if isfield(summarydata(i), 'time')
-                temp_var(i).raw_time = summarydata(i).time;
-                fprintf('Added raw_time to element %d.\n', i);
-            else
-                warning('Element %d does not have a "time" field.', i);
-            end
-        else
-            fprintf('Element %d already has raw_time.\n', i);
-        end
-    end
+% clear; close all;clc
+% % go the data folder
+% cd("/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure3/Cocaine_FB")
+% files = dir('*FB_summary.mat');
+% summary_FB_NAc_all = [];
+% summary_FB_DS_all  = [];
+% for j = 1:length(files)
+%     load(files(j).name)
+%     % find the autoshaping, PR, and shock session
+%     % clean the data
+%     % add raw_time to data
+%     temp_var = summarydata;
+%     for i = 1:numel(summarydata)
+%         if ~isfield(summarydata(i), 'raw_time')
+%             % Check if 'time' field exists before copying
+%             if isfield(summarydata(i), 'time')
+%                 temp_var(i).raw_time = summarydata(i).time;
+%                 fprintf('Added raw_time to element %d.\n', i);
+%             else
+%                 warning('Element %d does not have a "time" field.', i);
+%             end
+%         else
+%             fprintf('Element %d already has raw_time.\n', i);
+%         end
+%     end
 
     % save data with NAc and DS separately
 
-    % Get logical index where regions == 'NAc'
-    nacMask = arrayfun(@(x) isfield(x, 'region') && strcmp(x.region, 'NAc'), summarydata);
-    % Convert logical mask to indices
-    nacIndices = find(nacMask);
-    dsIndices  = find(~nacMask);
-    summary_FB_NAc_all(j).animalID = summarydata(1).animalID;
-    summary_FB_NAc_all(j).data = temp_var(nacIndices);
-
-    summary_FB_DS_all(j).animalID = summarydata(1).animalID;
-    summary_FB_DS_all(j).data    = temp_var(dsIndices);
-end
-cd('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure3')
-save('Cocaine_FB_NAc_summary.mat', 'summary_FB_NAc_all', '-v7.3')
-save('Cocaine_FB_DS_summary.mat', 'summary_FB_DS_all', '-v7.3')
+%     % Get logical index where regions == 'NAc'
+%     nacMask = arrayfun(@(x) isfield(x, 'region') && strcmp(x.region, 'NAc'), summarydata);
+%     % Convert logical mask to indices
+%     nacIndices = find(nacMask);
+%     dsIndices  = find(~nacMask);
+%     summary_FB_NAc_all(j).animalID = summarydata(1).animalID;
+%     summary_FB_NAc_all(j).data = temp_var(nacIndices);
+% 
+%     summary_FB_DS_all(j).animalID = summarydata(1).animalID;
+%     summary_FB_DS_all(j).data    = temp_var(dsIndices);
+% end
+% cd('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure3')
+% save('Cocaine_FB_NAc_summary.mat', 'summary_FB_NAc_all', '-v7.3')
+% save('Cocaine_FB_DS_summary.mat', 'summary_FB_DS_all', '-v7.3')
 %% Step 2: analyze punishment phases
-load('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure3/Cocaine_FB_NAc_summary.mat')
+load('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure3/data/Cocaine_FB_NAc_summary.mat')
 baseline_data = [];
 for i = 1:length(summary_FB_NAc_all)
     temp = summary_FB_NAc_all(i).data;
@@ -82,14 +82,15 @@ psth_time = baseline_data(1).psth_infusion_time;
 % Loop through each ID and pad the numeric part
 new_ids = [];
 for i = 1:length(animalID)
-    % Extract numeric part
+% Extract numeric part
     num_part = regexp(animalID{i}, '\d+', 'match');
-
-    % Convert to number and pad with leading zeros to 5 digits
+    % extract just the alphabet part 
+    Alpha_part = regexp(animalID{i}, '[A-Za-z]+', 'match');
+    % 
+    % % Convert to number and pad with leading zeros to 5 digits
     padded_num = sprintf('%03d', str2double(num_part{1}));
-
-    % Recombine with 'SA' prefix
-    new_ids{i} = ['SA' padded_num];
+    %
+    new_ids{i} = [Alpha_part{1}, padded_num];
 end
 animalID_unique = unique(new_ids);
 index_array =[];
@@ -108,7 +109,7 @@ data_to_plot = baseline_data(index_last_taking);
 population_psth_avg = psth_data(:, index_last_taking);
 
 %% add behavioral data
-load('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/Cocaine_testing_summary.mat')
+load('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/Cocaine_testing_summary_cluster.mat')
 
 % SA81, SA110 and SA150 lost patency, tested before perfusion
 remove_mask = arrayfun(@(x) strcmp(x.animalID, 'sa81')|strcmp(x.animalID, 'sa110')|strcmp(x.animalID, 'SA150'), summary_testing);
@@ -140,7 +141,8 @@ for i = 1:length(data_to_plot)
     data_to_plot(i).behavior.back_cue = behavior_testing(i).data{index_behavior, "Resp-Cue-B"};
 
 end
-save('Cocaine_FB_Punishment_plot.mat', 'data_to_plot', 'population_psth_avg', 'psth_time')
+cd('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure4')
+save('Cocaine_FB_Punishment_plot_122825.mat', 'data_to_plot', 'population_psth_avg', 'psth_time', 'summary_testing', 'data_plot')
 %% plot the population psth
 clear;clc;close all
 load('/Users/kechen/MIT Dropbox/Ke Chen/Wang Lab/Manuscripts/DA_Cocaine_Fentanyl/Figures/Figure1/Data/Cocaine_testing_summary.mat')
